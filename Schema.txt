@@ -1,0 +1,113 @@
+•
+ourSysDATE ( c
+date )
+PK (c
+date)
+Datatype
+-  c
+date:  date
+•
+Customer( login, password, name, address, email)
+PK (login)
+Datatype:
+-  login varchar2(10)
+-  password varchar2(10)
+-  name varchar2(20)
+-  address varchar2(30)
+-  email varchar2(20)
+•
+Administrator( login, password, name, address, email)
+PK (login)
+Datatype:
+-  login varchar2(10)
+-  password varchar2(10)
+-  name varchar2(20)
+-  address varchar2(30)
+-  email varchar2(20)
+•
+Product(auction
+id, name, description, seller, start
+date, min
+price, number
+of
+days, status,
+buyer, sell
+date, amount)
+PK (auction-id)
+FK (seller)
+→
+Customer(login)
+FK (buyer)
+→
+Customer(login)
+Datatype:
+-  auction
+id int
+-  name varchar2(20)
+-  description varchar2(30)
+-  seller varchar2(10)
+-  start
+date date
+-  min
+price int
+-  number
+of
+days int
+-  status varchar2(15) (not null)
+-  buyer varchar2(10)
+-  sell
+date date
+-  amount int
+•
+Bidlog(bidsn, auction
+id, bidder, bid
+time, amount)
+PK (bidsn)
+2
+FK (auction
+id)
+→
+Product(auction
+id)
+FK (bidder)
+→
+Customer(login)
+Datatype:
+-  bidsn int
+-  auction
+id int
+-  bidder varchar2(10)
+-  bid
+time date
+-  amount int
+•
+Category(name, parent
+category)
+PK (name)
+FK (parent
+category)
+→
+Category(name)
+Datatype:
+-  name varchar2(20)
+-  parent
+category varchar2(20)
+•
+BelongsTo(auction
+id, category)
+PK (auction
+id, category)
+FK (auction
+id)
+→
+Product(auction
+id)
+FK (category)
+→
+Category(name)
+Datatype
+–
+auction
+id int
+–
+category varchar2(20)
