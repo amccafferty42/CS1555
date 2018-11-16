@@ -1,3 +1,4 @@
+
 create or replace trigger AutoProductID
 before insert
 on product
@@ -31,14 +32,17 @@ begin
     end if;
 end;
 /
-/*
+
 create or replace trigger trig_bidTimeUpdate
 after insert
 on bidlog
+for each row
 begin
-    --increment system time by 5 seconds
+    update ourSysDate
+    set c_date = c_date + (5/24/60/60);
 end;
-*/
+/
+
 
 create or replace trigger trig_updateHighBid
 after insert
@@ -46,20 +50,22 @@ on bidlog
 for each row
 begin
     update product
-    set amount = :old.amount
-    where auction_id = :old.auction_id;
+    set amount = :new.amount
+    where auction_id = :new.auction_id;
 end;
 /
 
-/*
 create or replace trigger trig_closeAuctions
 after update
 on ourSysDate
+for each row
 begin
     --check if auction should be closed and close it
+    update product
+    set status = 'close'
+    where :new.c_date > start_date + number_of_days;
 end;
-*/
-
+/
 
 
 
