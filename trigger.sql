@@ -32,7 +32,7 @@ begin
 end;
 /
 /*
-create or replace trig_bidTimeUpdate
+create or replace trigger trig_bidTimeUpdate
 after insert
 on bidlog
 begin
@@ -40,7 +40,7 @@ begin
 end;
 */
 
-create or replace trig_updateHighBid
+create or replace trigger trig_updateHighBid
 after insert
 on bidlog
 for each row
