@@ -69,3 +69,22 @@ end;
 
 
 
+CREATE OR REPLACE FUNCTION func_productCount(x in integer, c in varchar2)return integer
+IS
+    a_count integer;
+    pastDate date;
+    curDate date;
+begin
+    select c_date into curdate from ourSysDATE;
+    pastDate := ( ADD_MONTHS (curDate, -x));
+
+    select count(auction_id) into a_count
+    from Product p natural join (select auction_id from BelongsTo where category = c)b
+    where p.sell_date > pastDate;
+    
+    return a_count;
+end;
+/
+
+
+
