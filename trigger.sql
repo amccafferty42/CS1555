@@ -88,3 +88,21 @@ end;
 
 
 
+CREATE OR REPLACE FUNCTION fucn_bidCount(x in integer, u in varchar2)return integer
+IS
+    a_count integer;
+    pastDate date;
+    curDate date;
+begin
+    select c_date into curdate from ourSysDATE;
+    pastDate := ( ADD_MONTHS (curDate, -x));
+
+    select count(bidsn) into a_count
+    from (select bidsn, bid_time from bidlog where bidder = u)
+    where bid_time > pastDate;
+    
+    return a_count;
+end;
+/
+
+select fucn_bidCount(6, 'juice26') from dual;
