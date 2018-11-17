@@ -105,4 +105,19 @@ begin
 end;
 /
 
-select fucn_bidCount(6, 'juice26') from dual;
+CREATE OR REPLACE FUNCTION func_buyingAmount(x in integer, u in varchar2)return integer
+IS
+    a_sum integer;
+    pastDate date;
+    curDate date;
+begin
+    select c_date into curdate from ourSysDATE;
+    pastDate := ( ADD_MONTHS (curDate, -x));
+
+    select sum(amount) into a_sum
+    from (select amount, sell_date from Product where buyer = u)
+    where sell_date > pastDate;
+    
+    return a_sum;
+end;
+/
