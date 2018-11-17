@@ -12,7 +12,7 @@ INSERT INTO Product VALUES (1, 'Ball', 'a baseball', 'tammy4life', sysdate, 50, 
 INSERT INTO Product VALUES (2, 'Book', null, 'tammy4life', sysdate, 12, 5, 'close', 'prucker_', sysdate, 20);
 INSERT INTO Product VALUES (3, 'Bat', 'a baseball bat', 'tammy4life', sysdate, 5, 7, 'under auction', null, null, null);
 INSERT INTO Product VALUES (4, 'Broom', 'slightly swept', 'prucker_', sysdate, 10, 9, 'close', 'tammy4life', sysdate, 20);
-INSERT INTO Product VALUES (5, 'Jet Ski', null, 'juice26', sysdate, 17000, 20, 'in auction', null, sysdate, null);
+INSERT INTO Product VALUES (5, 'Jet Ski', null, 'juice26', sysdate, 17000, 20, 'under auction', null, sysdate, null);
 
 INSERT INTO Bidlog VALUES (1, 1, 'juice26', sysdate, 50);
 INSERT INTO Bidlog VALUES (2, 1, 'prucker_', sysdate, 55);
