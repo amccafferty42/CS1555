@@ -1,4 +1,4 @@
-/* GROUP 16 */
+/*  GROUP 16 SCHEMA.SQL */
 
 --Make sure the table names are not in use
 drop table ourSysDATE cascade constraints;

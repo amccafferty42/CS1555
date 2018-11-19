@@ -1,5 +1,6 @@
 /* GROUP 16 INSERT.SQL*/
 
+--inserting everything
 INSERT INTO ourSysDATE VALUES (sysdate);
 
 INSERT INTO Customer VALUES ('tammy4life', 'starwars', 'Tammy Jones', '420 D St, Bham AL 21', 'taminator@yahoo.com');
