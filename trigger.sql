@@ -88,7 +88,7 @@ create or replace procedure proc_putProduct (prod_name in varchar2, cat_name in 
 as
     new_auction_id integer;
     curr_date date;
-    dummy varchar2(20);
+    check_for_new_category varchar2(20);
 begin
     select c_date into curr_date from ourSysDate;
     select max(auction_id)+1 into new_auction_id from product;
@@ -96,11 +96,12 @@ begin
     insert into product(auction_id, name, description, start_date, number_of_days, status)
     values(new_auction_id, prod_name, des, curr_date, num_days, 'under auction');
     
-    select name into dummy
+    --throw exception and add new category if the entered category doesn't already exist
+    select name into check_for_new_category
     from category
     where name = cat_name;
 exception
-    when no_data_found then
+    when new_category_found then
     insert into category(name) values(cat_name);
 end;
 /
