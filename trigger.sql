@@ -1,13 +1,3 @@
-create or replace trigger AutoBidNumber
-before insert
-on bidlog
-for each row
-begin
-    select max(bidsn)+1 into :new.bidsn
-    from bidlog;
-end;
-/
-
 create or replace trigger trig_bidTimeUpdate
 after insert
 on bidlog
