@@ -1,3 +1,5 @@
+/* GROUP 16 TRIGGER.SQL */
+
 create or replace trigger trig_bidTimeUpdate
 after insert
 on bidlog
