@@ -11,14 +11,36 @@ end;
 /
 
 
+
+--WONT ALLOW BID TO BE ENTERED IF THE INIT BID ISNT (>= min_Price or >HIGHEST CUR BID AMOUNT)
+--IF IT allows insert it updates the highest bid amount into Product(amount)
 create or replace trigger trig_updateHighBid
-after insert
+before insert
 on bidlog
 for each row
+DECLARE
+
+minPrice NUMBER;
+amount NUMBER;
+amountSmall EXCEPTION;
+
 begin
-    update product
-    set amount = :new.amount
-    where auction_id = :new.auction_id;
+    select min_price into minPrice from product where auction_id = :new.auction_id;
+    select amount into amount from product where auction_id = :new.auction_id;
+    
+    if (minPrice <= :new.amount AND coalesce(amount,0) < :new.amount)then
+        update product
+        set amount = :new.amount
+        where auction_id = :new.auction_id;
+    
+    else
+        RAISE amountSmall;
+    end if;
+    
+    exception
+        when amountSmall
+        then
+        RAISE_APPLICATION_ERROR(-20001, 'Error(BID ENTRY): Bid Is Not High Enough!');
 end;
 /
 
