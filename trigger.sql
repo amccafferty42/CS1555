@@ -134,12 +134,29 @@ return curDate;
 end;
 /
 
-create or replace view view_parentCat as
-select parent_category from category;
 
-create or replace view view_catName as
-select name from category;
+--RETURNS BIDSN OF 2ND HIGHEST BID
+CREATE OR REPLACE FUNCTION getSecHighBid(auctionID in integer) return integer
+is
+numOfBids integer;
+secHighBid integer;
 
+begin
+select count(auction_id) into numOfBids from bidlog where auction_id = auctionID;
+
+if numOfbids > 1 then
+    select amount into secHighBid from (select amount, DENSE_RANK() over(order by amount)a from bidlog where auction_id = auctionID)
+    where a =2;
+else
+    select amount into secHighBid from bidlog where auction_id=auctionID;
+end if;
+
+return secHighBid;
+end;
+/
+
+
+--PROCEDURES
 create or replace procedure proc_putProduct (sellerID in varchar2, prod_name in varchar2, cat_names in varchar2, num_days in integer, des in varchar2, minPrice in integer)
 is
     new_auction_id integer;
@@ -166,8 +183,21 @@ begin
 end;
 /
 
-/*
-select auction_id, name from product order by auction_id;
-select * from category;
 
-call proc_putProduct('skatasdes', 'asdfasdf', 1, 'loud');
+
+
+
+--VIEWS
+
+
+create or replace view view_parentCategory as
+select parent_category from category;
+
+create or replace view view_categoryNames as
+select name from category;
+
+--HAS MAX BIDSN CAN USE TO AUTO INSERT BIDSN WITH JDBC
+create or replace view view_maxBidsn as
+select max(bidsn) as maxBidsn from bidlog;
+
+
