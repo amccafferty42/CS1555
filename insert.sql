@@ -65,3 +65,5 @@ CALL proc_putProduct('juice26', 'turtle', 'Equipment,Tree,Household Objects,APE,
 
 
 select * from product;
+
+select getSecHighBid(3) from dual;

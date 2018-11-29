@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.sql.*;  //import the file containing definitions for the parts
+import java.text.ParseException;  //needed by java for database connection and manipulation
 
 public class MyAuction {
 
