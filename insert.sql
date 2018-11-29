@@ -58,9 +58,10 @@ select func_productCount(6, 'Equipment') from dual;
 select func_bidCount(6, 'prucker_') from dual;
 select func_buyingAmount(6, 'juic26') from dual;
 
-select to_char(bid_time, 'mm.dd/yyyy hh24:mi:ss') from Bidlog;
-select to_char(getCurDate, 'mm.dd/yyyy hh24:mi:ss') from dual;
+--select to_char(bid_time, 'mm.dd/yyyy hh24:mi:ss') from Bidlog;
+--select to_char(getCurDate, 'mm.dd/yyyy hh24:mi:ss') from dual;
 
 CALL proc_putProduct('juice26', 'turtle', 'Equipment,Tree,Household Objects,APE,ANIMAL', 5, 'SUPER SLOW', 10);
+
 
 select * from product;
