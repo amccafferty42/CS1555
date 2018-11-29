@@ -68,7 +68,7 @@ begin
 
     select count(auction_id) into a_count
     from Product p natural join (select auction_id from BelongsTo where category = c)b
-    where p.sell_date > pastDate;
+    where p.sell_date > pastDate and p.status = 'sold';
     
     return a_count;
 end;
@@ -169,4 +169,3 @@ select auction_id, name from product order by auction_id;
 select * from category;
 
 call proc_putProduct('skatasdes', 'asdfasdf', 1, 'loud');
-
