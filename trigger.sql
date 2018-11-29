@@ -18,6 +18,7 @@ create or replace trigger trig_updateHighBid
 before insert
 on bidlog
 for each row
+
 DECLARE
 
 minPrice NUMBER;
@@ -48,10 +49,11 @@ create or replace trigger trig_closeAuctions
 after update
 on ourSysDate
 for each row
+
 begin
     update product
-    set status = 'close'
-    where :new.c_date > start_date + number_of_days;
+    set status = 'closed'
+    where :new.c_date > sell_date and status = 'under auction';
 end;
 /
 
