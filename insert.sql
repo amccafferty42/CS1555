@@ -21,7 +21,7 @@ INSERT INTO Bidlog VALUES (3, 2, 'juice26', getcurdate, 12);
 INSERT INTO Bidlog VALUES (4, 2, 'prucker_', getcurdate, 13);
 INSERT INTO Bidlog VALUES (5, 2, 'juice26', getcurdate, 19);
 INSERT INTO Bidlog VALUES (6, 2, 'prucker_', getcurdate, 7);
-INSERT INTO Bidlog VALUES (7, 3, 'juice26', getcurdate, 20);
+INSERT INTO Bidlog VALUES (7, 3, 'tammy4life', getcurdate, 20);
 INSERT INTO Bidlog VALUES (8, 4, 'juice26', getcurdate, 10);
 INSERT INTO Bidlog VALUES (9, 4, 'tammy4life', getcurdate, 20);
 INSERT INTO Bidlog VALUES (10, 4, 'juice26', getcurdate, 20);

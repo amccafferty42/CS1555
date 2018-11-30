@@ -212,3 +212,18 @@ public class MyAuction {
         System.out.println("Suggestions:");
     }
 }
+
+
+
+/*
+"THIS QUERY IS FOR SUGGESTIONS just put the customer that is looking for 
+suggestions in place of 'juice26' will return in most recommended order"
+
+select auction_id, count(bidder) as bidders
+    from bidlog natural join (select bidder from bidlog natural join
+        (select auction_id from bidlog where bidder = 'juice26') where bidder != 'juice26')
+    where 
+        (auction_id not in (select auction_id from bidlog where bidder = 'juice26'))
+    Group by auction_id
+    Order by bidders desc;
+*/
