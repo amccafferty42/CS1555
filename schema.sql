@@ -54,7 +54,8 @@ create table Product(
     constraint fk_Product_Seller foreign key(seller) references Customer(login)
         on delete cascade,
     constraint fk_Product_Buyer foreign key(buyer) references Customer(login)
-        on delete cascade
+        on delete cascade,
+    constraint Product_Status check  ( status in('under auction','sold','withdrawn','closed'))
 );
 
 

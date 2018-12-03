@@ -11,14 +11,37 @@ end;
 /
 
 
+
+--WONT ALLOW BID TO BE ENTERED IF THE INIT BID ISNT (>= min_Price or >HIGHEST CUR BID AMOUNT)
+--IF IT allows insert it updates the highest bid amount into Product(amount)
 create or replace trigger trig_updateHighBid
-after insert
+before insert
 on bidlog
 for each row
+
+DECLARE
+
+minPrice NUMBER;
+amount NUMBER;
+amountSmall EXCEPTION;
+
 begin
-    update product
-    set amount = :new.amount
-    where auction_id = :new.auction_id;
+    select min_price into minPrice from product where auction_id = :new.auction_id;
+    select amount into amount from product where auction_id = :new.auction_id;
+    
+    if (minPrice <= :new.amount AND coalesce(amount,0) < :new.amount)then
+        update product
+        set amount = :new.amount
+        where auction_id = :new.auction_id;
+    
+    else
+        RAISE amountSmall;
+    end if;
+    
+    exception
+        when amountSmall
+        then
+        RAISE_APPLICATION_ERROR(-20001, 'Error(BID ENTRY): Bid Is Not High Enough!');
 end;
 /
 
@@ -26,10 +49,11 @@ create or replace trigger trig_closeAuctions
 after update
 on ourSysDate
 for each row
+
 begin
     update product
-    set status = 'close'
-    where :new.c_date > start_date + number_of_days;
+    set status = 'closed'
+    where :new.c_date > sell_date and status = 'under auction';
 end;
 /
 
@@ -46,7 +70,7 @@ begin
 
     select count(auction_id) into a_count
     from Product p natural join (select auction_id from BelongsTo where category = c)b
-    where p.sell_date > pastDate;
+    where p.sell_date > pastDate and p.status = 'sold';
     
     return a_count;
 end;
@@ -86,30 +110,94 @@ begin
 end;
 /
 
-create or replace procedure proc_putProduct (prod_name in varchar2, cat_name in varchar2, num_days in integer, des in varchar2)
-as
-    new_auction_id integer;
-    curr_date date;
-    check_for_new_category varchar2(20);
+
+CREATE OR REPLACE FUNCTION initSellDate(x in NUMBER) return date
+is
+firstDate date;
+
 begin
-    select c_date into curr_date from ourSysDate;
-    select max(auction_id)+1 into new_auction_id from product;
-    
-    insert into product(auction_id, name, description, start_date, number_of_days, status)
-    values(new_auction_id, prod_name, des, curr_date, num_days, 'under auction');
-    
-    --throw exception and add new category if the entered category doesn't already exist
-    select name into check_for_new_category
-    from category
-    where name = cat_name;
-exception
-    when new_category_found then
-    insert into category(name) values(cat_name);
+select (c_date + x) into firstDate from ourSysDate;
+
+return firstDate;
 end;
 /
-/*
-select auction_id, name from product order by auction_id;
-select * from category;
 
-call proc_putProduct('skatasdes', 'asdfasdf', 1, 'loud');
+
+CREATE OR REPLACE FUNCTION getCurDate return date
+is
+curDate date;
+
+begin
+select c_date into curDate from ourSysDate;
+
+return curDate;
+end;
+/
+
+
+--RETURNS BIDSN OF 2ND HIGHEST BID
+CREATE OR REPLACE FUNCTION getSecHighBid(auctionID in integer) return integer
+is
+numOfBids integer;
+secHighBid integer;
+
+begin
+select count(auction_id) into numOfBids from bidlog where auction_id = auctionID;
+
+if numOfbids > 1 then
+    select amount into secHighBid from (select amount, DENSE_RANK() over(order by amount)a from bidlog where auction_id = auctionID)
+    where a =2;
+else
+    select amount into secHighBid from bidlog where auction_id=auctionID;
+end if;
+
+return secHighBid;
+end;
+/
+
+
+--PROCEDURES
+create or replace procedure proc_putProduct (sellerID in varchar2, prod_name in varchar2, cat_names in varchar2, num_days in integer, des in varchar2, minPrice in integer)
+is
+    new_auction_id integer;
+
+begin
+    --initialSellDate := initSellDate(numD);
+    
+    select max(auction_id)+1 into new_auction_id from product;
+    insert into product(auction_id, name, description, start_date, seller, number_of_days, status, sell_date, min_price)
+    values(new_auction_id, prod_name, des, getCurDate, sellerID, num_days, 'under auction', initSellDate(num_days), minPrice);
+
+    FOR i IN
+       (SELECT level,
+          trim(regexp_substr(cat_names, '[^,]+', 1, LEVEL)) str
+        FROM dual
+          CONNECT BY regexp_substr(cat_names , '[^,]+', 1, LEVEL) IS NOT NULL 
+          AND (regexp_substr(cat_names , '[^,]+', 1, LEVEL) not in (select parent_category from category))
+          AND (regexp_substr(cat_names , '[^,]+', 1, LEVEL) in (select name from category)))
+        
+    LOOP
+        insert into belongsto values(new_auction_id, i.str);
+    END LOOP;
+
+end;
+/
+
+
+
+
+
+--VIEWS
+
+
+create or replace view view_parentCategory as
+select parent_category from category;
+
+create or replace view view_categoryNames as
+select name from category;
+
+--HAS MAX BIDSN CAN USE TO AUTO INSERT BIDSN WITH JDBC
+create or replace view view_maxBidsn as
+select max(bidsn) as maxBidsn from bidlog;
+
 
