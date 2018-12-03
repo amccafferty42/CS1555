@@ -3,24 +3,41 @@ import java.sql.*;  //import the file containing definitions for the parts
 import java.text.ParseException;  //needed by java for database connection and manipulation
 
 public class MyAuction {
+    private static Connection dbcon;
+    private Statement statement;
+    private PreparedStatement prepStatement; 
+    private ResultSet resultSet; 
+    private String query;  
 
-    public static void main(String [] args){
-        Scanner reader = new Scanner(System.in);
-        int input = 0;
-        do{
-            System.out.println("Sign In:\n" +
-                                "Admin\t\t(1)\n" +
-                                "Customer\t(2)\n");
-            if(reader.hasNextInt()){
-                input = reader.nextInt();
-            }else{
-                reader.next();
-            }
-        }while(input != 1 && input != 2);
-        login(input);
+    public static void main(String [] args) {
+        String username = "asm122", password = "3942566";
+        try {
+            //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile
+            //DriverManager.registerDriver (new oracle.jdbc.driver.OracleDriver());
+            String url = "jdbc:oracle:thin:@class3.cs.pitt.edu:1521:dbclass";
+            dbcon = DriverManager.getConnection(url, username, password);
+
+            Scanner reader = new Scanner(System.in);
+            int input = 0;
+            do{
+                System.out.println("Sign In:\n" +
+                                    "Admin\t\t(1)\n" +
+                                    "Customer\t(2)\n");
+                if(reader.hasNextInt()){
+                    input = reader.nextInt();
+                }else{
+                    reader.next();
+                }
+            }while(input != 1 && input != 2);
+            login(input);
+        }
+        catch (SQLException s) {
+            System.out.print(s.toString());                
+            System.exit(1);
+        }
     }
 
-    static void login(int input){
+    static void login(int input) throws SQLException {
         Scanner reader = new Scanner(System.in);
         String username, password;
         boolean badLogin = true;
@@ -29,26 +46,36 @@ public class MyAuction {
             username = reader.next();
             System.out.print("Password: ");
             password = reader.next();
+            Statement statement;
+            String query;
+            ResultSet resultSet;
             if(input == 1){
-                //if(check if admin exists in db){
+                statement = dbcon.createStatement();
+                query = "SELECT login, password FROM Administrator WHERE login='"+username+"' AND password='"+password+"'";
+                resultSet = statement.executeQuery(query);
+                //returns boolean, check if result set is not empty
+                if(resultSet.next()){
                     adminInterface();
-                //}else{
-                    //System.out.println("Admin does not exist");
-                //}
+                }else{
+                    System.out.println("Admin does not exist");
+                }
                 badLogin = false;
             }else{
-                //if(check if admin exists in db){
+                statement = dbcon.createStatement();
+                query = "SELECT login, password FROM Customer WHERE login='"+username+"' AND password='"+password+"'";
+                resultSet = statement.executeQuery(query);
+                if(resultSet.next()){
                     customerInterface();
-                //}else{
-                    //System.out.println("Customer does not exist");
-                //}
+                }else{
+                    System.out.println("Customer does not exist");
+                }
                 badLogin = false;
             }
         }while(badLogin);
         
     }
 
-    static void adminInterface(){
+    static void adminInterface() throws SQLException {
         Scanner reader = new Scanner(System.in);
         int input = 0;
         do{
@@ -73,7 +100,7 @@ public class MyAuction {
         }while(input != 4);
     }
 
-    static void registerCustomer(){
+    static void registerCustomer() throws SQLException {
         Scanner reader = new Scanner(System.in);
         System.out.println("Register New Customer");
         System.out.print("Name: ");
@@ -87,7 +114,22 @@ public class MyAuction {
         System.out.print("Password: ");
         String password = reader.next();
 
-        //add to Customer Table
+        Statement statement = dbcon.createStatement();
+        String query = "INSERT INTO Customer VALUES ('"+username+"','"+password+"','"+name+"','"+address+"','"+email+"')";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        printCustomer();
+    }
+
+    //TEST method to print out customer table entries
+    static void printCustomer() throws SQLException {
+        Statement statement = dbcon.createStatement();
+        String query = "SELECT * FROM Customer";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(1) + ", "+resultSet.getString(2) + ", "+resultSet.getString(3) + ", "+resultSet.getString(4) + ", "+resultSet.getString(5));
+        }
     }
 
     static void updateSystemTime(){
