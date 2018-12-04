@@ -76,7 +76,7 @@ begin
 end;
 /
 
-CREATE OR REPLACE FUNCTION fucn_bidCount(x in integer, u in varchar2)return integer
+CREATE OR REPLACE FUNCTION func_bidCount(x in integer, u in varchar2)return integer
 IS
     a_count integer;
     pastDate date;
