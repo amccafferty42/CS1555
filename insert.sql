@@ -1,8 +1,9 @@
 /* GROUP 16 INSERT.SQL*/
 
 --inserting everything
-INSERT INTO ourSysDATE VALUES (to_date('01.01/2000 00:00:00' ,'mm.dd/yyyy hh24:mi:ss'));
-
+ALTER SESSION SET nls_date_format= 'mm/dd/yyyy hh24:mi:ss';
+--INSERT INTO ourSysDATE VALUES (to_date('01.01/2000 00:00:00' ,'mm/dd/yyyy hh24:mi:ss'));
+INSERT INTO ourSysDATE VALUES(sysdate);
 INSERT INTO Customer VALUES ('tammy4life', 'starwars', 'Tammy Jones', '420 D St, Bham AL 21', 'taminator@yahoo.com');
 INSERT INTO Customer VALUES ('juice26', 'playhard', 'LeVeon Bell', '8 B Ln, Miami FL 1', 'juice@nfl.com');
 INSERT INTO Customer VALUES ('prucker_', '12345', 'Jean Prucker', '22 C Rd, Pburgh PA 5', 'jprucker@aol.com');
@@ -58,12 +59,10 @@ select func_productCount(6, 'Equipment') from dual;
 select func_bidCount(6, 'prucker_') from dual;
 select func_buyingAmount(6, 'juic26') from dual;
 
---select to_char(bid_time, 'mm.dd/yyyy hh24:mi:ss') from Bidlog;
---select to_char(getCurDate, 'mm.dd/yyyy hh24:mi:ss') from dual;
 
 CALL proc_putProduct('juice26', 'turtle', 'Equipment,Tree,Household Objects,APE,ANIMAL', 5, 'SUPER SLOW', 10);
 
 
-select * from Product;
+select * from bidlog;
 
 select getSecHighBid(3) from dual;

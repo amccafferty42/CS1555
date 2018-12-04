@@ -1,6 +1,9 @@
-import java.util.Scanner;
+import java.util.*;
 import java.sql.*;  //import the file containing definitions for the parts
 import java.text.ParseException;  //needed by java for database connection and manipulation
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 
 public class MyAuction {
     private static Connection dbcon;
@@ -85,7 +88,8 @@ public class MyAuction {
                                 "Register New Customer\t(1)\n" +
                                 "Update System Time\t(2)\n" +
                                 "Product Stats\t\t(3)\n" +
-                                "Quit\t\t\t(4)\n");
+								"Statistics\t\t(4)\n" +
+                                "Quit\t\t\t(5)\n");
             if(reader.hasNextInt()){
                 input = reader.nextInt();
             }else{
@@ -105,7 +109,13 @@ public class MyAuction {
             }else if(input == 3){
                 productStats();
             }
-        }while(input != 4);
+			else if(input == 4){
+                statistics();
+            }
+			
+			
+			
+        }while(input != 5);
     }
 
     static void registerCustomer() throws SQLException {
@@ -148,7 +158,7 @@ public class MyAuction {
 		System.out.println("MONTH in numbers: ");
 		int month = reader.nextInt();
 		date += (month);
-		date += (".");
+		date += ("/");
 		
 		System.out.println("DAY: ");
 		int day = reader.nextInt();
@@ -176,7 +186,7 @@ public class MyAuction {
 		
 		
 		Statement statement = dbcon.createStatement();
-        String query = "UPDATE ourSysDate set c_date = (to_date('"+date+"', 'mm.dd/yyyy hh24:mi:ss'))";
+        String query = "UPDATE ourSysDate set c_date = (to_date('"+date+"', 'mm/dd/yyyy hh24:mi:ss'))";
         ResultSet resultSet = statement.executeQuery(query);
 		
 		query = "SELECT * from ourSysDate";
@@ -187,12 +197,47 @@ public class MyAuction {
         //update DB
     }
 
-    static void productStats(){
-        System.out.println("Product Stats:");
-        //output oracle functions
-        // func_productCount
-        // func_bidCount
-    }
+    static void productStats() throws SQLException{
+       System.out.println("Product Stats:");
+       Scanner reader = new Scanner(System.in);
+       int input = 0;
+       do{
+           System.out.println("List all products\t(1)\n" +
+                               "List user products\t(2)\n");
+           if(reader.hasNextInt()){
+               input = reader.nextInt();
+           }else{
+               reader.nextLine();
+           }
+       }while(input != 1 && input != 2);
+	   
+       String where_user = " WHERE ";
+       if(input == 2){
+           System.out.print("Username: ");
+           String username = reader.next();
+
+           where_user += " seller = '" + username + "' AND";
+		   
+       }
+
+       Statement statement = dbcon.createStatement();
+       String query = "SELECT name, status, amount, bidder FROM Product natural join bidLog" + where_user + " status = 'under auction'";
+       ResultSet resultSet = statement.executeQuery(query);
+
+       while (resultSet.next()) {
+           System.out.println(resultSet.getString(1) + " '" + resultSet.getString(2) + "' " + resultSet.getString(3) + " " + resultSet.getString(4));
+       }
+	   
+	   statement = dbcon.createStatement();
+       query = "SELECT name, status, amount, buyer FROM Product" + where_user + " status = 'sold'";
+       resultSet = statement.executeQuery(query);
+
+       while (resultSet.next()) {
+           System.out.println(resultSet.getString(1) + " '" + resultSet.getString(2) + "' " + resultSet.getString(3) + " " + resultSet.getString(4));
+       }
+	   
+   }
+
 
     static void customerInterface(String username){
         Scanner reader = new Scanner(System.in);
@@ -239,7 +284,7 @@ public class MyAuction {
 				}
             }else if(input == 4){
                 try{
-				bidOnProducts();
+				bidOnProducts(username);
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
@@ -463,35 +508,54 @@ static void searchProducts() throws SQLException{
    
    
 
-    static void bidOnProducts() throws SQLException{ 
-        Scanner reader = new Scanner(System.in);
-        System.out.println("Bid on Products");
-        do{
-            System.out.print("Product ID: ");
-            if(reader.hasNextInt()){
-                int auctionID = reader.nextInt();
-                if(auctionID > 0){
-                    break;
-                }
-            }else{
-                reader.next();
-            }
-        }while(true);
-        do{
-            System.out.print("Amount: ");
-            if(reader.hasNextInt()){
-                int amount = reader.nextInt();
-                if(amount > 0){
-                    break;
-                }
-            }else{
-                reader.next();
-            }
-        }while(true);
+static void bidOnProducts(String username) throws SQLException{
+       Scanner reader = new Scanner(System.in);
+       System.out.println("Bid on Products");
+	   
+       Statement statement = dbcon.createStatement();
+       String query = "SELECT max(auction_id) FROM Product";
+       ResultSet resultSet = statement.executeQuery(query);
+	   resultSet.next();
 
-        //check if product exists
-        //add bid
-    }
+	   int auctionID = 0;
+	   
+       do{
+           System.out.print("Product ID: ");
+           if(reader.hasNextInt()){
+               auctionID = reader.nextInt();
+               if(auctionID > 0 && auctionID <= resultSet.getInt(1)){
+                   break;
+               }
+           }else{
+               reader.next();
+           }
+       }while(true);
+	   
+	   int amount = 0;
+	   
+       do{
+           System.out.print("Amount: ");
+           if(reader.hasNextInt()){
+               amount = reader.nextInt();
+               if(amount > 0){
+                   break;
+               }
+           }else{
+               reader.next();
+           }
+       }while(true);
+
+
+	   
+       query = "SELECT * from view_maxBidsn";
+       resultSet = statement.executeQuery(query);
+	   resultSet.next();
+	   int num = 1 + resultSet.getInt(1);
+	   
+       query = "INSERT INTO Bidlog VALUES("+num+", " + auctionID + ", '" + username + "', (SELECT c_date FROM ourSysDate)  ," + amount + ")";
+	   statement.executeQuery(query);
+   }
+
 
 	
 	
@@ -516,7 +580,47 @@ static void searchProducts() throws SQLException{
 	
 	
 	
-	
+	static void statistics() throws SQLException{
+       Scanner reader = new Scanner(System.in);
+       int x = 0;
+       do{
+           System.out.println("Number of months to look back: ");
+           if(reader.hasNextInt()){
+               x = reader.nextInt();
+           }
+       }while(x <= 0);
+       System.out.print("Enter the category name: ");
+       String c = reader.next();
+	   
+       System.out.println("Enter username: ");
+       String u = reader.next();
+
+       CallableStatement statement = dbcon.prepareCall("{? = CALL func_productCount(?, ?)}");
+       statement.registerOutParameter(1, Types.INTEGER);
+       statement.setString(2, x + "");
+       statement.setString(3, c);
+       statement.execute();
+       int output_1 = statement.getInt(1);
+
+       statement = dbcon.prepareCall("{? = CALL func_bidCount(?, ?)}");
+       statement.registerOutParameter(1, Types.INTEGER);
+       statement.setString(2, x + "");
+       statement.setString(3, u);
+       statement.execute();
+       int output_2 = statement.getInt(1);
+
+       statement = dbcon.prepareCall("{? = CALL func_buyingAmount(?, ?)}");
+       statement.registerOutParameter(1, Types.INTEGER);
+       statement.setString(2, x + "");
+       statement.setString(3, u);
+       statement.execute();
+       int output_3 = statement.getInt(1);
+
+       System.out.println("Product Count: " + output_1);
+       System.out.println("Bid Count: " + output_2);
+       System.out.println("Buying Amount: " + output_3);
+   }
+
 	
 	
 	
