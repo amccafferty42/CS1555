@@ -292,7 +292,7 @@ public class MyAuction {
 				}
             }else if(input == 5){
                 try{
-				sellProduct();
+				sellProduct(username);
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
@@ -568,8 +568,109 @@ static void bidOnProducts(String username) throws SQLException{
 	
 	
 	
-    static void sellProduct() throws SQLException{
+    static void sellProduct(String username) throws SQLException{
         System.out.println("Selling Product");
+		
+		Scanner reader = new Scanner(System.in);
+	   
+        Statement statement = dbcon.createStatement();
+        String query = "SELECT auction_id FROM Product WHERE status = 'under auction' AND seller = '"+ username +"'";
+        ResultSet resultSet = statement.executeQuery(query);
+	    
+		
+		while(resultSet.next()){
+			System.out.println(resultSet.getString(1));
+			}
+			
+		boolean exist = false;
+		int x = 0, y = 0;
+		
+		do{
+			
+			System.out.println("Please select auctionID or 0 to ignore: ");
+           if(reader.hasNextInt()){
+               x = reader.nextInt();
+		   } 
+			
+			query = "SELECT auction_id FROM Product WHERE status = 'under auction' AND seller = '"+ username +"'";
+			resultSet = statement.executeQuery(query);
+			
+			if(x == 0){
+				exist = true;
+			}
+			
+			
+			while(resultSet.next()){
+			
+				if(x == resultSet.getInt(1)){
+						exist = true;
+				}
+			
+			}	
+		}while(!exist);
+		
+		
+	
+		int amount = 0;
+	
+		if(x != 0){
+			query = "SELECT getSecHighBid("+x+") from dual";
+			resultSet = statement.executeQuery(query);
+			resultSet.next();
+			amount = resultSet.getInt(1);
+			System.out.println("Bid AMOUNT: " + amount + "" );
+			exist = false;
+		}
+		
+		//System.out.println("XXXXXXXXXX");
+		
+		while(!exist){
+			
+			System.out.println("Would you like to sell(y/n): ");
+           
+               String b = reader.next();
+			   
+			if(b.equals("y")){
+				exist = true;
+			
+				query = "Update Product set status = 'sold' WHERE auction_id = "+x+"";
+				resultSet = statement.executeQuery(query);
+				
+			
+			
+				//add
+				query = "SELECT bidder from bidlog WHERE auction_id = "+x+"";
+				resultSet = statement.executeQuery(query);
+				resultSet.next();
+				
+				query = "Update Product set buyer = '"+resultSet.getString(1)+"' WHERE auction_id = "+x+"";
+				resultSet = statement.executeQuery(query);	
+
+				//add
+				query = "SELECT amount from bidlog WHERE auction_id = "+x+" AND amount = "+amount+"";
+				resultSet = statement.executeQuery(query);
+				resultSet.next();
+				
+				query = "Update Product set amount = "+resultSet.getString(1)+" WHERE auction_id = "+x+"";
+				resultSet = statement.executeQuery(query);	
+			
+				//add
+				
+				query = "Update Product set sell_date = getcurdate WHERE auction_id = "+x+"";
+				resultSet = statement.executeQuery(query);	
+			}	
+			
+			else if(b.equals("n")){
+				exist = true;
+				query = "Update Product set status = 'closed' WHERE auction_id = "+x+"";
+				resultSet = statement.executeQuery(query);
+			}
+			
+			else{exist = false;}
+		
+		}
+		
+		
     }
 	
 	
@@ -589,12 +690,48 @@ static void bidOnProducts(String username) throws SQLException{
                x = reader.nextInt();
            }
        }while(x <= 0);
-       System.out.print("Enter the category name: ");
-       String c = reader.next();
 	   
-       System.out.println("Enter username: ");
-       String u = reader.next();
+	   /*i -- he top k highest volume categories (highest count of products sold), 
+	   here we only care categories that do not contain any other subcategories 
+	   (i.e, leaf nodes in the category hierarchy)
+	   */
+	   
+	   //"(Select distinct category from BelongsTo)"
+	   
+	   Statement statement = dbcon.createStatement();
+       String  query = "Select category from BelongsTo Order by (select func_productCount("+x+", category) from dual)";
 
+       ResultSet resultSet = statement.executeQuery(query);
+	   
+	   while(resultSet.next()){
+	   
+	   System.out.println(resultSet.getString(1));}
+
+	   
+	   /*ii -- the top k highest volume categories 
+	   (highest count of products sold),
+	   we only care categories that do not belong to any other category 
+	   (root nodes in the category hierarchy)
+	   */
+	   
+	   
+	   
+	   //iii --the top k most active bidders (highest count of bids placed) 
+	   
+	   
+	   //iv --the top k most active buyers (highest total dollar amount spent) 
+	   
+	   
+	   
+	   
+	   
+	   
+       //System.out.print("Enter the category name: ");
+       //String c = reader.next();
+	   
+       //System.out.println("Enter username: ");
+       //String u = reader.next();
+/*
        CallableStatement statement = dbcon.prepareCall("{? = CALL func_productCount(?, ?)}");
        statement.registerOutParameter(1, Types.INTEGER);
        statement.setString(2, x + "");
@@ -616,9 +753,15 @@ static void bidOnProducts(String username) throws SQLException{
        statement.execute();
        int output_3 = statement.getInt(1);
 
+	   
+	
+	   
+	   
        System.out.println("Product Count: " + output_1);
        System.out.println("Bid Count: " + output_2);
        System.out.println("Buying Amount: " + output_3);
+	   
+	      */
    }
 
 	
