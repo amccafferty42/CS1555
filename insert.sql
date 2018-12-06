@@ -1,7 +1,7 @@
 /* GROUP 16 INSERT.SQL*/
 
 --inserting everything
-ALTER SESSION SET nls_date_format= 'mm/dd/yyyy hh24:mi:ss';
+--ALTER SESSION SET nls_date_format= 'mm/dd/yyyy hh24:mi:ss';
 --INSERT INTO ourSysDATE VALUES (to_date('01.01/2000 00:00:00' ,'mm/dd/yyyy hh24:mi:ss'));
 INSERT INTO ourSysDATE VALUES(sysdate);
 INSERT INTO Customer VALUES ('tammy4life', 'starwars', 'Tammy Jones', '420 D St, Bham AL 21', 'taminator@yahoo.com');
@@ -28,16 +28,37 @@ INSERT INTO Bidlog VALUES (9, 4, 'tammy4life', getcurdate, 20);
 INSERT INTO Bidlog VALUES (10, 4, 'juice26', getcurdate, 20);
 
 
-INSERT INTO Category VALUES ('Equipment', null);
-INSERT INTO Category VALUES ('Motor Sports', null);
-INSERT INTO Category VALUES ('Sports', null);
-INSERT INTO Category VALUES ('Household Objects', null);
-INSERT INTO Category VALUES ('Cleaning', 'Household Objects');
+INSERT INTO Category VALUES ('Clothes', null);
+INSERT INTO Category VALUES ('Pants','Clothes');
+INSERT INTO Category VALUES ('Shirts','Clothes');
+INSERT INTO Category VALUES ('Socks','Clothes');
+INSERT INTO Category VALUES ('Underwear','Clothes');
 
 
-INSERT INTO BelongsTo VALUES (1, 'Equipment');
-INSERT INTO BelongsTo VALUES (2, 'Household Objects');
-INSERT INTO BelongsTo VALUES (3, 'Equipment');
+INSERT INTO Category VALUES ('Electronics', null);
+INSERT INTO Category VALUES ('Phones','Electronics');
+INSERT INTO Category VALUES ('Computers','Electronics');
+INSERT INTO Category VALUES ('Stereos','Electronics');
+INSERT INTO Category VALUES ('Radios','Electronics');
+
+INSERT INTO Category VALUES ('Automotive', null);
+INSERT INTO Category VALUES ('Electric','Automotive');
+INSERT INTO Category VALUES ('Engine','Automotive');
+INSERT INTO Category VALUES ('Body','Automotive');
+INSERT INTO Category VALUES ('Accesories','Automotive');
+
+INSERT INTO Category VALUES ('Household', null);
+INSERT INTO Category VALUES ('Cleaning', 'Household');
+INSERT INTO Category VALUES ('Tools', 'Household');
+INSERT INTO Category VALUES ('Furniture', 'Household');
+INSERT INTO Category VALUES ('Decorations', 'Household');
+
+INSERT INTO Category VALUES ('Misc', null);
+
+
+INSERT INTO BelongsTo VALUES (1, 'Misc');
+INSERT INTO BelongsTo VALUES (2, 'Misc');
+INSERT INTO BelongsTo VALUES (3, 'Misc');
 INSERT INTO BelongsTo VALUES (4, 'Cleaning');
 
 commit;
@@ -54,13 +75,7 @@ INSERT INTO BelongsTo VALUES (1, 'gardening');
 INSERT INTO BelongsTo VALUES (8, 'Equipment');
 
 
-
-select func_productCount(6, 'Equipment') from dual;
-select func_bidCount(6, 'prucker_') from dual;
-select func_buyingAmount(6, 'juic26') from dual;
-
-
-CALL proc_putProduct('juice26', 'turtle', 'Equipment,Tree,Household Objects,APE,ANIMAL', 5, 'SUPER SLOW', 10);
+CALL proc_putProduct('juice26', 'turtle', 'Misc,Tree,Household,APE,ANIMAL', 5, 'SUPER SLOW', 10);
 
 --select * from Product;
 
