@@ -46,10 +46,10 @@ public class MyAuction {
         String username, password;
         boolean badLogin = true;
         do{
-            System.out.print("Username: ");
+            System.out.print("\nUsername: ");
             username = reader.next();
 			
-            System.out.print("Password: ");
+            System.out.print("\nPassword: ");
             password = reader.next();
             Statement statement;
             String query;
@@ -84,7 +84,7 @@ public class MyAuction {
         Scanner reader = new Scanner(System.in);
         int input = 0;
         do{
-            System.out.println("\nAdmin Interface:\n" +
+            System.out.println("\n\nAdmin Interface:\n" +
                                 "Register New Customer\t(1)\n" +
                                 "Update System Time\t(2)\n" +
                                 "Product Stats\t\t(3)\n" +
@@ -104,7 +104,7 @@ public class MyAuction {
 				}
 				catch (SQLException s) {
 					System.out.print(s.toString());                
-					System.exit(1);
+					//System.exit(1);
 				}
             }else if(input == 3){
                 productStats();
@@ -120,39 +120,29 @@ public class MyAuction {
 
     static void registerCustomer() throws SQLException {
         Scanner reader = new Scanner(System.in);
-        System.out.println("Register New Customer");
-        System.out.print("Name: ");
+        System.out.println("\nRegister New Customer");
+        System.out.print("\nName: ");
         String name = reader.next();
-        System.out.print("Address: ");
+        System.out.print("\nAddress: ");
         String address = reader.next();
-        System.out.print("Email: ");
+        System.out.print("\nEmail: ");
         String email = reader.next();
-        System.out.print("Username: ");
+        System.out.print("\nUsername: ");
         String username = reader.next();
-        System.out.print("Password: ");
+        System.out.print("\nPassword: ");
         String password = reader.next();
 
         Statement statement = dbcon.createStatement();
         String query = "INSERT INTO Customer VALUES ('"+username+"','"+password+"','"+name+"','"+address+"','"+email+"')";
         ResultSet resultSet = statement.executeQuery(query);
-
-        printCustomer();
+		System.out.println("...CUSTOMER ADDED\n");
+		
     }
 
-    //TEST method to print out customer table entries
-    static void printCustomer() throws SQLException {
-        Statement statement = dbcon.createStatement();
-        String query = "SELECT * FROM Customer";
-        ResultSet resultSet = statement.executeQuery(query);
-
-        while (resultSet.next()) {
-            System.out.println(resultSet.getString(1) + ", "+resultSet.getString(2) + ", "+resultSet.getString(3) + ", "+resultSet.getString(4) + ", "+resultSet.getString(5));
-        }
-    }
 
     static void updateSystemTime() throws SQLException{
 		Scanner reader = new Scanner(System.in);
-        System.out.println("Update System Time: ");
+        System.out.println("\nUpdate System Time: ");
 		String date = "";
 		
 		System.out.println("MONTH in numbers: ");
@@ -180,7 +170,7 @@ public class MyAuction {
 		date += (minutes);
 		date += (":");
 		
-		System.out.println("SECONDS");
+		System.out.println("SECONDS:");
 		int seconds = reader.nextInt();
 		date += (seconds);
 		
@@ -189,16 +179,10 @@ public class MyAuction {
         String query = "UPDATE ourSysDate set c_date = (to_date('"+date+"', 'mm/dd/yyyy hh24:mi:ss'))";
         ResultSet resultSet = statement.executeQuery(query);
 		
-		query = "SELECT * from ourSysDate";
-        resultSet = statement.executeQuery(query);
-	resultSet.next();
-		System.out.println(resultSet.getString(1));
-		
-        //update DB
     }
 
     static void productStats() throws SQLException{
-       System.out.println("Product Stats:");
+       System.out.println("\nProduct Stats:");
        Scanner reader = new Scanner(System.in);
        int input = 0;
        do{
@@ -224,6 +208,8 @@ public class MyAuction {
        String query = "SELECT name, status, amount, bidder FROM Product natural join bidLog" + where_user + " status = 'under auction'";
        ResultSet resultSet = statement.executeQuery(query);
 
+	   System.out.println("NAME, STATUS, AMOUNT, BIDDER/BUYER");
+	   
        while (resultSet.next()) {
            System.out.println(resultSet.getString(1) + " '" + resultSet.getString(2) + "' " + resultSet.getString(3) + " " + resultSet.getString(4));
        }
@@ -243,7 +229,7 @@ public class MyAuction {
         Scanner reader = new Scanner(System.in);
         int input = 0;
         do{
-            System.out.println("\nCustomer Interface:\n" +
+            System.out.println("\n\nCustomer Interface:\n" +
                                 "Browse Products\t\t(1)\n" +
                                 "Search Products\t\t(2)\n" +
                                 "Auction Product\t\t(3)\n" +
@@ -263,7 +249,7 @@ public class MyAuction {
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
-					System.exit(1);
+					//System.exit(1);
 				}
             }else if(input == 2){
                 try{
@@ -271,7 +257,7 @@ public class MyAuction {
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
-					System.exit(1);
+					//System.exit(1);
 				}
 				
             }else if(input == 3){
@@ -280,7 +266,7 @@ public class MyAuction {
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
-					System.exit(1);
+					//System.exit(1);
 				}
             }else if(input == 4){
                 try{
@@ -288,7 +274,7 @@ public class MyAuction {
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
-					System.exit(1);
+					//System.exit(1);
 				}
             }else if(input == 5){
                 try{
@@ -296,7 +282,7 @@ public class MyAuction {
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
-					System.exit(1);
+					//System.exit(1);
 				}
             }else if(input == 6){
                 try{
@@ -304,7 +290,7 @@ public class MyAuction {
 				}
 			 catch (SQLException s) {
 					System.out.print(s.toString());                
-					System.exit(1);
+					//System.exit(1);
 				}
             }
         }while(input != 7);
@@ -314,12 +300,13 @@ public class MyAuction {
 		Scanner reader = new Scanner(System.in);
 		
 		
-        System.out.println("Browsing Products....\n");
+        System.out.println("\nBrowsing Products....\n");
 
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * from Category where parent_category is null";
 		ResultSet resultSet = statement.executeQuery(query);
 
+		System.out.println("---PARENT CATEGORIES---");
 		
 		while (resultSet.next()) {
             System.out.println(resultSet.getString(1));
@@ -349,6 +336,7 @@ public class MyAuction {
 			query = "SELECT name from category where parent_category = '"+category+"'";
 			resultSet = statement.executeQuery(query);
 			
+			System.out.println("---SUB CATEGORIES---");
 			while (resultSet.next()) {
 				System.out.println(resultSet.getString(1));
 			}
@@ -375,7 +363,7 @@ public class MyAuction {
        int order = 0;
 	   String order_by = "";
        do{
-           System.out.println("Order?:\n" +
+           System.out.println("\nOrder?:\n" +
                        "Alphabetical\t\t(1)\n" +
                        "Highest Bid\t\t(2)\n" +
                        "No Order\t\t(3)\n");
@@ -406,8 +394,8 @@ public class MyAuction {
 
 static void searchProducts() throws SQLException{
        Scanner reader = new Scanner(System.in);
-       System.out.println("Search Products");
-       System.out.print("Keywords:");
+       System.out.println("\n-Search Products-");
+       System.out.print("\nKeywords:");
        String words = reader.nextLine();
        String[] keywords = words.split(" ");
       
@@ -419,6 +407,9 @@ static void searchProducts() throws SQLException{
        }
        ResultSet resultSet = statement.executeQuery(query);
       
+	   System.out.println("\nAUCTION_ID, NAME, DESCRIPTION");
+	  
+	  
        while (resultSet.next()) {
            System.out.println(resultSet.getString(1) + " " + resultSet.getString(2) + " '" + resultSet.getString(3) + "'");
        }
@@ -577,7 +568,7 @@ static void bidOnProducts(String username) throws SQLException{
         String query = "SELECT auction_id FROM Product WHERE status = 'under auction' AND seller = '"+ username +"'";
         ResultSet resultSet = statement.executeQuery(query);
 	    
-		
+		System.out.println("\n---AUCTION_ID(s)---");
 		while(resultSet.next()){
 			System.out.println(resultSet.getString(1));
 			}
@@ -622,7 +613,6 @@ static void bidOnProducts(String username) throws SQLException{
 			exist = false;
 		}
 		
-		//System.out.println("XXXXXXXXXX");
 		
 		while(!exist){
 			
@@ -700,15 +690,14 @@ static void bidOnProducts(String username) throws SQLException{
 		String query = "select auction_id, count(bidder) as bidders from bidlog natural join (select bidder from bidlog natural join (select auction_id from bidlog where bidder = 'juice26') where bidder != '" +username + "') where (auction_id not in (select auction_id from bidlog where bidder = '" +username + "'))Group by auction_id Order by bidders desc";
 		ResultSet resultSet = statement.executeQuery(query);
 		
+		
+		System.out.println("--SUGGESTED AUCTION_ID(s)--");
+		
 		while (resultSet.next()) {
 				System.out.println(resultSet.getString(1));
 			}
     }
 	
-	//static void browseProducts(){
-	//   System.out.println("Browsing Products");
-	///   printProducts();
-	//}
 	
 	
 	

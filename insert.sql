@@ -62,7 +62,5 @@ select func_buyingAmount(6, 'juic26') from dual;
 
 CALL proc_putProduct('juice26', 'turtle', 'Equipment,Tree,Household Objects,APE,ANIMAL', 5, 'SUPER SLOW', 10);
 
+--select * from Product;
 
-select * from Product;
-
-select getSecHighBid(3) from dual;
