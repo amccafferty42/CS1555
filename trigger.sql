@@ -22,14 +22,16 @@ for each row
 DECLARE
 
 minPrice NUMBER;
+status varchar2(20);
 amount NUMBER;
 amountSmall EXCEPTION;
 
 begin
     select min_price into minPrice from product where auction_id = :new.auction_id;
     select amount into amount from product where auction_id = :new.auction_id;
+    select status into status from product where auction_id = :new.auction_id;
     
-    if (minPrice <= :new.amount AND coalesce(amount,0) < :new.amount)then
+    if (minPrice <= :new.amount AND coalesce(amount,0) < :new.amount AND status = 'under auction')then
         update product
         set amount = :new.amount
         where auction_id = :new.auction_id;
