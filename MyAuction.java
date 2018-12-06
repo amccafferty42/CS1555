@@ -671,7 +671,29 @@ static void bidOnProducts(String username) throws SQLException{
 	
 	
 	
-	static void statistics() throws SQLException{
+static void statistics() throws SQLException{
+       Scanner reader = new Scanner(System.in);
+       int x = 0;
+       do{
+           System.out.println("Number of months to look back: ");
+           if(reader.hasNextInt()){
+               x = reader.nextInt();
+           }
+       }while(x <= 0);
+       
+	   /*i*/
+	   
+	   
+	   
+	   /*ii*/
+	   
+	   
+	   /*iii*/
+	   
+	   
+	   
+	   /*iv*/
+	   
    }
 
 	
