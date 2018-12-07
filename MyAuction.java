@@ -14,7 +14,7 @@ public class MyAuction {
 	
 	
     public static void main(String [] args) {
-        String username = "daj59", password = "Eckeiscute12#";
+        String username = "", password = "";
 		
         try {
             //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile

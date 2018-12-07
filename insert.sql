@@ -34,7 +34,6 @@ INSERT INTO Category VALUES ('Shirts','Clothes');
 INSERT INTO Category VALUES ('Socks','Clothes');
 INSERT INTO Category VALUES ('Underwear','Clothes');
 
-
 INSERT INTO Category VALUES ('Electronics', null);
 INSERT INTO Category VALUES ('Phones','Electronics');
 INSERT INTO Category VALUES ('Computers','Electronics');
@@ -77,5 +76,5 @@ INSERT INTO BelongsTo VALUES (8, 'Equipment');
 
 CALL proc_putProduct('juice26', 'turtle', 'Misc,Tree,Household,APE,ANIMAL', 5, 'SUPER SLOW', 10);
 
---select * from Product;
+select * from Product;
 
