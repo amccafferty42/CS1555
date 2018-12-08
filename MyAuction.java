@@ -1,3 +1,4 @@
+import java.util.stream.Collectors;
 import java.util.*;
 import java.sql.*;  //import the file containing definitions for the parts
 import java.text.ParseException;  //needed by java for database connection and manipulation
@@ -618,24 +619,72 @@ static void bidOnProducts(String username) throws SQLException{
 //NEEDS TO BE CREATED/ADDED	
 static void statistics() throws SQLException{
        Scanner reader = new Scanner(System.in);
-       int x = 0;
-       do{
+       int x = 0, k = 0, counter = 0;
+
+       Statement statement = dbcon.createStatement();
+       String query;
+       ResultSet resultSet, resultSetCat, resultSetCust;
+
+       do {
            System.out.println("Number of months to look back: ");
            if(reader.hasNextInt()){
                x = reader.nextInt();
            }
-       }while(x <= 0);
+       } while(x <= 0);
+       do {
+            System.out.println("Number of results to list: ");
+            if(reader.hasNextInt()){
+                k = reader.nextInt();
+            }
+        } while(x <= 0);
        
-	   /*i*/
-	   
-	   
+       /*i*/
+            //stores category name and product count of respective category
+            Map<String, Integer> i = new HashMap<String, Integer>(20);
+
+            //select all categories
+            query = "SELECT DISTINCT name FROM Category";
+			resultSetCat = statement.executeQuery(query);
+            
+            //iterate through set of categories and store product count in HashMap
+            while(resultSetCat.next()) {
+                query = "SELECT func_productCount("+x+","+resultSetCat.getString(1)+") from dual";
+                resultSet = statement.executeQuery(query);
+                i.put(resultSetCat.getString(1), resultSet.getInt(1));
+            }
+
+            //convert to stream and use comparator from Map.Entry to sort in descending order then convert back to Map with a limit of k entries
+            Map<String,Integer> sorted = i.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(k).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+            //print out map
+            System.out.println("The top "+k+" highest categories: ");
+            sorted.entrySet().forEach(System.out::println);
 	   
 	   /*ii*/
 	   
 	   
 	   /*iii*/
 	   
-	   
+            //stores category name and product count of respective category
+            Map<String, Integer> iii = new HashMap<String, Integer>(50);
+
+            //select all customers
+            query = "SELECT login FROM Customer";
+			resultSetCust = statement.executeQuery(query);
+            
+            //iterate through set of customers and store product count of bids in HashMap
+            while(resultSetCust.next()) {
+                query = "SELECT func_bidCount("+x+","+resultSetCust.getString(1)+") from dual";
+                resultSet = statement.executeQuery(query);
+                iii.put(resultSetCat.getString(1), resultSet.getInt(1));
+            }
+
+            //convert to stream and use comparator from Map.Entry to sort in descending order then convert back to Map with a limit of k entries
+            sorted = iii.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(k).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+            //print out map
+            System.out.println("The top "+k+" most active bidders: ");
+            sorted.entrySet().forEach(System.out::println);
 	   
 	   /*iv*/
 	   
