@@ -8,7 +8,7 @@ public class Driver extends MyAuction{
     private static Connection dbcon;
     
     public static void main(String[] args) {
-        String username = "", password = "";
+        String username = "tms112", password = "3943171";
 		
         try {
             //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile
@@ -30,34 +30,49 @@ public class Driver extends MyAuction{
     }
 
     public void runMethods() throws SQLException{
+        System.out.println("Printing Pants Prducts");
         super.printProducts("Pants", 1, dbcon);
+        System.out.println("\nPrinting Misc Products");
         super.printProducts("Misc", 2, dbcon);
+        System.out.println("\nPrinting Tool Products");
         super.printProducts("Tools", 3, dbcon);
 
-        super.createCustomer("a", "b", "c", "d", "e", dbcon);
+        System.out.println("\nChecking create customer");
+        Random rand = new Random();
+        super.createCustomer("a"+rand.nextInt(1000), "b"+rand.nextInt(1000), "c"+rand.nextInt(1000), "d"+rand.nextInt(1000), "e"+rand.nextInt(1000), dbcon);
         selectAllFrom("Customer");
 
+        System.out.println("\nChecking Update Time");
         super.updateTime("12/25/2010 05:32:12", dbcon);
         selectAllFrom("ourSysDate");
 
-        super.listProducts("WHERE seller = 'juice26' AND ", dbcon);
+        System.out.println("\nListing All Products");
+        super.listProducts(" WHERE ", dbcon);
+        
+        System.out.println("\nListing User Products (tammy4life)");
+        super.listProducts(" WHERE seller = 'tammy4life' AND ", dbcon);
 
         //still needs stats
 
+        System.out.println("\nPrinting products with keywords a and b");
         String [] ar = {"a", "b"};
         super.keywordProducts(ar, dbcon);
 
+        System.out.println("\nAdding Product");
         super.putUpAuction("juice26", "Steeler's Jersey", "Cleaning", "3", "washed up", "5",dbcon);
         selectAllFrom("Product");
 
+        System.out.println("\nInserting bid");
         super.insertBid(1, "juice26", 100 ,dbcon);
         selectAllFrom("Bidlog");
 
+        System.out.println("\nSelling Product");
         super.sellThisProduct(1, 100, true ,dbcon);
         selectAllFrom("Product");
         super.sellThisProduct(2, 100, false ,dbcon);
         selectAllFrom("Product");
 
+        System.out.println("\nGetting suggestions for juice26");
         super.getSuggestions("juice26", dbcon);
     }
 

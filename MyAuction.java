@@ -1,4 +1,3 @@
-import java.util.stream.Collectors;
 import java.util.*;
 import java.sql.*;  //import the file containing definitions for the parts
 import java.text.ParseException;  //needed by java for database connection and manipulation
@@ -12,10 +11,9 @@ public class MyAuction {
     private PreparedStatement prepStatement; 
     private ResultSet resultSet; 
     private String query;  
-	
-	
+
     public static void main(String [] args) {
-        String username = "", password = "";
+        String username = "tms112", password = "3943171";
 		
         try {
             //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile
@@ -115,8 +113,6 @@ public class MyAuction {
                 statistics();
             }
 			
-			
-			
         }while(input != 5);
     }
 
@@ -134,9 +130,7 @@ public class MyAuction {
         System.out.print("\nUsername: ");
         String username = reader.next();
         System.out.print("\nPassword: ");
-        String password = reader.next();
-
-		
+        String password = reader.next();		
 		
 		createCustomer(username, password, name, address, email, dbcon);
         
@@ -179,14 +173,11 @@ public class MyAuction {
 		int seconds = reader.nextInt();
 		date += (seconds);
 		
-		
 		updateTime(date, dbcon);
 		
 		System.out.println("...System Date Updated\n");
 		
     }
-
-	
 	
 	//Created
     static void productStats() throws SQLException{
@@ -215,8 +206,6 @@ public class MyAuction {
 		listProducts(where_user, dbcon);
 	   
    }
-
-
 
     static void customerInterface(String username){
         Scanner reader = new Scanner(System.in);
@@ -289,9 +278,7 @@ public class MyAuction {
         }while(input != 7);
     }
 
-	
-	
-//CREATED
+    //CREATED
     static void browseProducts() throws SQLException{
 		Scanner reader = new Scanner(System.in);
 		
@@ -370,17 +357,8 @@ public class MyAuction {
 	
 	}
 
-
-
-
-
-
-
-
-
-
-//Created 
-static void searchProducts() throws SQLException{
+    //Created 
+    static void searchProducts() throws SQLException{
        Scanner reader = new Scanner(System.in);
        System.out.println("\n-Search Products-");
        System.out.print("\nKeywords:");
@@ -388,145 +366,90 @@ static void searchProducts() throws SQLException{
        String[] keywords = words.split(" ");
       
 
-       ResultSet resultSet = keywordProducts(keywords, dbcon);
-      
-	   System.out.println("\nAUCTION_ID, NAME, DESCRIPTION");
-	  
-	  
-       while (resultSet.next()) {
-           System.out.println(resultSet.getString(1) + " " + resultSet.getString(2) + " '" + resultSet.getString(3) + "'");
-       }
+       System.out.println("\nAUCTION_ID, NAME, DESCRIPTION");
+
+       keywordProducts(keywords, dbcon);
    }
 
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
 //CREATED
- static void auctionProducts(String username) throws SQLException{
-       Scanner reader = new Scanner(System.in);
-       System.out.println("Put a product up for auction");
-       System.out.print("Name: ");
-       String name = reader.nextLine();
-       System.out.print("Description: ");
-       String desc = reader.nextLine();
-       System.out.print("Categories: ");
-       String categories = reader.nextLine();
-       int days = 0;
-       do{
-           System.out.print("Days for Auction: ");
-           if(reader.hasNextInt()){
-               days = reader.nextInt();
-               if(days > 0){
-                   break;
-               }
-           }else{
-               reader.nextLine();
-			   
-           }
-       }while(true);
-       int price = 0;
-       do{
-           System.out.print("Min Price: ");
-           if(reader.hasNextInt()){
-               price = reader.nextInt();
-               if(price > 0){
-                   break;
-               }
-           }else{
-               reader.nextLine();
-           }
-       }while(true);
-	  
+    static void auctionProducts(String username) throws SQLException{
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Put a product up for auction");
+        System.out.print("Name: ");
+        String name = reader.nextLine();
+        System.out.print("Description: ");
+        String desc = reader.nextLine();
+        System.out.print("Categories: ");
+        String categories = reader.nextLine();
+        int days = 0;
+        do{
+            System.out.print("Days for Auction: ");
+            if(reader.hasNextInt()){
+                days = reader.nextInt();
+                if(days > 0){
+                    break;
+                }
+            }else{
+                reader.nextLine();
+                
+            }
+        }while(true);
+        int price = 0;
+        do{
+            System.out.print("Min Price: ");
+            if(reader.hasNextInt()){
+                price = reader.nextInt();
+                if(price > 0){
+                    break;
+                }
+            }else{
+                reader.nextLine();
+            }
+        }while(true);
+        
+        putUpAuction(username, name, categories, days+"", desc, price+"", dbcon);
+    }
 
-	   putUpAuction(username, name, categories, days+"", desc, price+"", dbcon);
-	   
-   }
-
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
 //CREATED
-static void bidOnProducts(String username) throws SQLException{
-       Scanner reader = new Scanner(System.in);
-       System.out.println("Bid on Products");
-	   
-       Statement statement = dbcon.createStatement();
-       String query = "SELECT max(auction_id) FROM Product";
-       ResultSet resultSet = statement.executeQuery(query);
-	   resultSet.next();
+    static void bidOnProducts(String username) throws SQLException{
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Bid on Products");
+        
+        Statement statement = dbcon.createStatement();
+        String query = "SELECT max(auction_id) FROM Product";
+        ResultSet resultSet = statement.executeQuery(query);
+        resultSet.next();
 
-	   int auctionID = 0;
-	   
-       do{
-           System.out.print("Product ID: ");
-           if(reader.hasNextInt()){
-               auctionID = reader.nextInt();
-               if(auctionID > 0 && auctionID <= resultSet.getInt(1)){
-                   break;
-               }
-           }else{
-               reader.next();
-           }
-       }while(true);
-	   
-	   int amount = 0;
-	   
-       do{
-           System.out.print("Amount: ");
-           if(reader.hasNextInt()){
-               amount = reader.nextInt();
-               if(amount > 0){
-                   break;
-               }
-           }else{
-               reader.next();
-           }
-       }while(true);
+        int auctionID = 0;
+        
+        do{
+            System.out.print("Product ID: ");
+            if(reader.hasNextInt()){
+                auctionID = reader.nextInt();
+                if(auctionID > 0 && auctionID <= resultSet.getInt(1)){
+                    break;
+                }
+            }else{
+                reader.next();
+            }
+        }while(true);
+        
+        int amount = 0;
+        
+        do{
+            System.out.print("Amount: ");
+            if(reader.hasNextInt()){
+                amount = reader.nextInt();
+                if(amount > 0){
+                    break;
+                }
+            }else{
+                reader.next();
+            }
+        }while(true);
+        insertBid(auctionID, username, amount, dbcon);
+    }
 
-
-	   insertBid(auctionID, username, amount, dbcon);
-
-   }
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	//CREATED
     static void sellProduct(String username) throws SQLException{
         System.out.println("Selling Product");
@@ -546,11 +469,10 @@ static void bidOnProducts(String username) throws SQLException{
 		int x = 0, y = 0;
 		
 		do{
-			
 			System.out.println("Please select auctionID or 0 to ignore: ");
-           if(reader.hasNextInt()){
-               x = reader.nextInt();
-		   } 
+            if(reader.hasNextInt()){
+                x = reader.nextInt();
+            } 
 			
 			query = "SELECT auction_id FROM Product WHERE status = 'under auction' AND seller = '"+ username +"'";
 			resultSet = statement.executeQuery(query);
@@ -569,8 +491,6 @@ static void bidOnProducts(String username) throws SQLException{
 			}	
 		}while(!exist);
 		
-		
-	
 		int amount = 0;
 	
 		if(x != 0){
@@ -582,7 +502,6 @@ static void bidOnProducts(String username) throws SQLException{
 			exist = false;
 		}
 		
-		
 		while(!exist){
 			
 			System.out.println("Would you like to sell(y/n): ");
@@ -592,320 +511,220 @@ static void bidOnProducts(String username) throws SQLException{
 			if(b.equals("y")){
 				sellThisProduct(x, amount, true, dbcon);
 				exist = true;
-			
-
 			}	
 			
 			else if(b.equals("n")){
 				sellThisProduct(x, amount, false, dbcon);
 				exist = true;
-
 			}
 			
-			else{exist = false;}
-		
+			else{exist = false;}		
 		}
-		
-		
     }
 	
-	
-	
-	
-	
-	
-	
-	
-//NEEDS TO BE CREATED/ADDED	
-static void statistics() throws SQLException{
-       Scanner reader = new Scanner(System.in);
-       int x = 0, k = 0, counter = 0;
-
-       Statement statement = dbcon.createStatement();
-       String query;
-       ResultSet resultSet, resultSetCat, resultSetCust;
-
-       do {
-           System.out.println("Number of months to look back: ");
-           if(reader.hasNextInt()){
-               x = reader.nextInt();
-           }
-       } while(x <= 0);
-       do {
-            System.out.println("Number of results to list: ");
+    //NEEDS TO BE CREATED/ADDED	
+    static void statistics() throws SQLException{
+        Scanner reader = new Scanner(System.in);
+        int x = 0;
+        do{
+            System.out.println("Number of months to look back: ");
             if(reader.hasNextInt()){
-                k = reader.nextInt();
+                x = reader.nextInt();
             }
-        } while(x <= 0);
+        }while(x <= 0);
        
-       /*i*/
-            //stores category name and product count of respective category
-            Map<String, Integer> i = new HashMap<String, Integer>(20);
-
-            //select all categories
-            query = "SELECT DISTINCT name FROM Category";
-			resultSetCat = statement.executeQuery(query);
-            
-            //iterate through set of categories and store product count in HashMap
-            while(resultSetCat.next()) {
-                query = "SELECT func_productCount("+x+","+resultSetCat.getString(1)+") from dual";
-                resultSet = statement.executeQuery(query);
-                i.put(resultSetCat.getString(1), resultSet.getInt(1));
-            }
-
-            //convert to stream and use comparator from Map.Entry to sort in descending order then convert back to Map with a limit of k entries
-            Map<String,Integer> sorted = i.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(k).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-            //print out map
-            System.out.println("The top "+k+" highest categories: ");
-            sorted.entrySet().forEach(System.out::println);
+	   /*i*/
+	   
+	   
 	   
 	   /*ii*/
 	   
 	   
 	   /*iii*/
 	   
-            //stores category name and product count of respective category
-            Map<String, Integer> iii = new HashMap<String, Integer>(50);
-
-            //select all customers
-            query = "SELECT login FROM Customer";
-			resultSetCust = statement.executeQuery(query);
-            
-            //iterate through set of customers and store product count of bids in HashMap
-            while(resultSetCust.next()) {
-                query = "SELECT func_bidCount("+x+","+resultSetCust.getString(1)+") from dual";
-                resultSet = statement.executeQuery(query);
-                iii.put(resultSetCat.getString(1), resultSet.getInt(1));
-            }
-
-            //convert to stream and use comparator from Map.Entry to sort in descending order then convert back to Map with a limit of k entries
-            sorted = iii.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(k).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-            //print out map
-            System.out.println("The top "+k+" most active bidders: ");
-            sorted.entrySet().forEach(System.out::println);
+	   
 	   
 	   /*iv*/
 	   
    }
 
-	
-	
-	
-	
-	
-	
-	
-	
 	//Created
     static void suggestions(String username) throws SQLException{
         System.out.println("Suggestions:");
 		
-		ResultSet resultSet = getSuggestions(username, dbcon);
+		getSuggestions(username, dbcon);
 		
 		System.out.println("--SUGGESTED AUCTION_ID(s)--");
-		
-		while (resultSet.next()) {
-				System.out.println(resultSet.getString(1));
-			}
     }
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 //FUNCTIONS FOR DRIVER AND BENCHMARK	
-	
-	
+    static void printProducts(String cat, int order, Connection dbcon) throws SQLException {
+        Statement statement = dbcon.createStatement();
+        String amount = "";
+        String order_by = "";
+        if(order == 1){
+            order_by = " ORDER BY name";
+        }else if(order == 2){
+            order_by = " ORDER BY amount desc";
+        }else{
+            order_by = "";
+        }
+        String where_cat = " WHERE category = '" + cat + "'AND status = 'under auction'";
 
- static void printProducts(String cat, int order, Connection dbcon) throws SQLException {
-       Statement statement = dbcon.createStatement();
-       String amount = "";
-	   String order_by = "";
-	    if(order == 1){
-           order_by = " ORDER BY name";
-       }else if(order == 2){
-           order_by = " ORDER BY amount desc";
-       }else{
-           order_by = "";
-       }
-	   
-	   		String where_cat = " WHERE category = '" + cat + "'AND status = 'under auction'";
+        if(order_by.equals(" ORDER BY amount desc")){
+            amount = ", coalesce(amount,0) as amount ";
+        }
+        String query = "SELECT auction_id, name" + amount +" FROM (Product NATURAL JOIN BelongsTo) " + where_cat +" " +order_by;
+        ResultSet resultSet = statement.executeQuery(query);
 
-	   
-	   
-       if(order_by.equals(" ORDER BY amount desc")){
-           amount = ", coalesce(amount,0) as amount ";
-       }
-       String query = "SELECT auction_id, name" + amount +" FROM (Product NATURAL JOIN BelongsTo) " + where_cat +" " +order_by;
-       ResultSet resultSet = statement.executeQuery(query);
-
-		System.out.println("AUCTION_ID, NAME, BID(SHOWN ONLY WHEN SORTED BY BID)");
-		
-       while (resultSet.next()) {
-           String output = resultSet.getString(1) + " " + resultSet.getString(2);
-           if(order_by.equals(" ORDER BY amount desc")){
-               output += " " + resultSet.getString(3);
-           }
-           System.out.println(output);
-       }
-   }
+        System.out.println("AUCTION_ID, NAME, BID(SHOWN ONLY WHEN SORTED BY BID)");
+        
+        while (resultSet.next()) {
+            String output = resultSet.getString(1) + " " + resultSet.getString(2);
+            if(order_by.equals(" ORDER BY amount desc")){
+                output += " " + resultSet.getString(3);
+            }
+            System.out.println(output);
+        }
+        resultSet.close();
+    }
    
    
-static ResultSet createCustomer(String username, String password, String name, String address, String email, Connection dbcon) throws SQLException{
-	
-	
-	Statement statement = dbcon.createStatement();
-    String query = "INSERT INTO Customer VALUES ('"+username+"','"+password+"','"+name+"','"+address+"','"+email+"')";
-    ResultSet resultSet = statement.executeQuery(query);
+    static void createCustomer(String username, String password, String name, String address, String email, Connection dbcon) throws SQLException{
+        Statement statement = dbcon.createStatement();
+        String query = "INSERT INTO Customer VALUES ('"+username+"','"+password+"','"+name+"','"+address+"','"+email+"')";
+        ResultSet resultSet = statement.executeQuery(query);
+        resultSet.close();
+    }
 
-
-	return resultSet;
-}
-
-
-
-static ResultSet updateTime(String date, Connection dbcon) throws SQLException{
+    static void updateTime(String date, Connection dbcon) throws SQLException{
 		Statement statement = dbcon.createStatement();
         String query = "UPDATE ourSysDate set c_date = (to_date('"+date+"', 'mm/dd/yyyy hh24:mi:ss'))";
         ResultSet resultSet = statement.executeQuery(query);
-		
-		return resultSet;
+		resultSet.close();
 	}
 	
 	
-static void listProducts(String where_user, Connection dbcon) throws SQLException{
-	   Statement statement = dbcon.createStatement();
-       String query = "SELECT name, status, amount, bidder FROM Product natural join bidLog" + where_user + " status = 'under auction'";
-       ResultSet resultSet = statement.executeQuery(query);
+    static void listProducts(String where_user, Connection dbcon) throws SQLException{
+        Statement statement = dbcon.createStatement();
+        String query = "SELECT name, status, amount, bidder FROM Product natural join bidLog " + where_user + " status = 'under auction'";
+        ResultSet resultSet = statement.executeQuery(query);
 
-	   System.out.println("NAME, STATUS, AMOUNT, BIDDER/BUYER");
-	   
-       while (resultSet.next()) {
-           System.out.println(resultSet.getString(1) + " '" + resultSet.getString(2) + "' " + resultSet.getString(3) + " " + resultSet.getString(4));
-       }
-	   
-	   statement = dbcon.createStatement();
-       query = "SELECT name, status, amount, buyer FROM Product" + where_user + " status = 'sold'";
-       resultSet = statement.executeQuery(query);
+        System.out.println("NAME, STATUS, AMOUNT, BIDDER/BUYER");
+        
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(1) + " '" + resultSet.getString(2) + "' " + resultSet.getString(3) + " " + resultSet.getString(4));
+        }
+        
+        statement = dbcon.createStatement();
+        query = "SELECT name, status, amount, buyer FROM Product" + where_user + " status = 'sold'";
+        resultSet = statement.executeQuery(query);
 
-       while (resultSet.next()) {
-           System.out.println(resultSet.getString(1) + " '" + resultSet.getString(2) + "' " + resultSet.getString(3) + " " + resultSet.getString(4));
-       }
-}
-
-
-static ResultSet keywordProducts(String[] keywords, Connection dbcon) throws SQLException{
-	
-	   Statement statement = dbcon.createStatement();
-       String query = "SELECT auction_id, name, description FROM Product WHERE description LIKE '%" + keywords[0] +"%'";
-       if(keywords.length >= 2){
-           query += " AND description LIKE '%" + keywords[1] + "%'";
-       }
-       ResultSet resultSet = statement.executeQuery(query);
-	
-	return resultSet;
-}
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(1) + " '" + resultSet.getString(2) + "' " + resultSet.getString(3) + " " + resultSet.getString(4));
+        }
+        
+        resultSet.close();
+    }
 
 
+    static void keywordProducts(String[] keywords, Connection dbcon) throws SQLException{
+        Statement statement = dbcon.createStatement();
+        String query = "SELECT auction_id, name, description FROM Product WHERE description LIKE '%" + keywords[0] +"%'";
+        if(keywords.length >= 2){
+            query += " AND description LIKE '%" + keywords[1] + "%'";
+        }
+        ResultSet resultSet = statement.executeQuery(query);
 
-static void putUpAuction(String username, String name, String categories, String days, String desc, String price, Connection dbcon) throws SQLException{
-	
-	   //String inputs = "'" + username + "', '" + name + "', '" + categories + "', " + days + ", '" + desc + "', " + price + "";
-       String query = "{CALL proc_putProduct(?, ?, ?, ?, ?, ?)}";
-	   CallableStatement statement = dbcon.prepareCall(query);
-	   statement.setString(1, username);
-	   statement.setString(2, name);
-	   statement.setString(3, categories);
-	   statement.setString(4, days);
-	   statement.setString(5, desc);
-	   statement.setString(6, price);
-	   
-       statement.executeQuery();
-	   
-	   System.out.println("...Item put up for Auction");
-}
-
-
-static void insertBid(int auctionID, String username, int amount, Connection dbcon) throws SQLException{
-	
-	   Statement statement = dbcon.createStatement();
-	   String query = "SELECT * from view_maxBidsn";
-       ResultSet resultSet = statement.executeQuery(query);
-	   resultSet.next();
-	   int num = 1 + resultSet.getInt(1);
-	   
-       query = "INSERT INTO Bidlog VALUES("+num+", " + auctionID + ", '" + username + "', (SELECT c_date FROM ourSysDate)  ," + amount + ")";
-	   statement.executeQuery(query);
-	   
-	   System.out.println("...Bid has been placed");
-	
-}
-
-
-static void sellThisProduct(int x, int amount, boolean toSell, Connection dbcon) throws SQLException{
-	
-	Statement statement = dbcon.createStatement();
-	
-	if(toSell){
-		String query = "Update Product set status = 'sold' WHERE auction_id = "+x+"";
-		ResultSet resultSet = statement.executeQuery(query);
-
-		//add
-		query = "SELECT bidder from bidlog WHERE auction_id = "+x+"";
-		resultSet = statement.executeQuery(query);
-		resultSet.next();
-		
-		query = "Update Product set buyer = '"+resultSet.getString(1)+"' WHERE auction_id = "+x+"";
-		resultSet = statement.executeQuery(query);	
-
-		//add
-		query = "SELECT amount from bidlog WHERE auction_id = "+x+" AND amount = "+amount+"";
-		resultSet = statement.executeQuery(query);
-		resultSet.next();
-		
-		query = "Update Product set amount = "+resultSet.getString(1)+" WHERE auction_id = "+x+"";
-		resultSet = statement.executeQuery(query);	
-	
-		//add
-		
-		query = "Update Product set sell_date = getcurdate WHERE auction_id = "+x+"";
-		resultSet = statement.executeQuery(query);
-		
-		System.out.print("...Product has been sold!");
-
-	}
-
-	else{
-		
-		String query = "Update Product set status = 'closed' WHERE auction_id = "+x+"";
-		ResultSet resultSet = statement.executeQuery(query);
-		System.out.print("...Product has been closed!");
-	}
-	
-}
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(1) + " " + resultSet.getString(2) + " '" + resultSet.getString(3) + "'");
+        }
+        resultSet.close();
+    }
 
 
 
-static ResultSet getSuggestions(String username, Connection dbcon) throws SQLException{
-	
-	Statement statement = dbcon.createStatement();
-	String query = "select auction_id, count(bidder) as bidders from bidlog natural join (select bidder from bidlog natural join (select auction_id from bidlog where bidder = 'juice26') where bidder != '" +username + "') where (auction_id not in (select auction_id from bidlog where bidder = '" +username + "'))Group by auction_id Order by bidders desc";
-	ResultSet resultSet = statement.executeQuery(query);
-		
-	return resultSet;
-}
+    static void putUpAuction(String username, String name, String categories, String days, String desc, String price, Connection dbcon) throws SQLException{
+        //String inputs = "'" + username + "', '" + name + "', '" + categories + "', " + days + ", '" + desc + "', " + price + "";
+        String query = "{CALL proc_putProduct(?, ?, ?, ?, ?, ?)}";
+        CallableStatement statement = dbcon.prepareCall(query);
+        statement.setString(1, username);
+        statement.setString(2, name);
+        statement.setString(3, categories);
+        statement.setString(4, days);
+        statement.setString(5, desc);
+        statement.setString(6, price);
+        
+        statement.executeQuery();
+        
+        System.out.println("...Item put up for Auction");
+    }
 
+
+    static void insertBid(int auctionID, String username, int amount, Connection dbcon) throws SQLException{
+        Statement statement = dbcon.createStatement();
+        String query = "SELECT * from view_maxBidsn";
+        ResultSet resultSet = statement.executeQuery(query);
+        resultSet.next();
+        int num = 1 + resultSet.getInt(1);
+        
+        query = "INSERT INTO Bidlog VALUES("+num+", " + auctionID + ", '" + username + "', (SELECT c_date FROM ourSysDate)  ," + amount + ")";
+        statement.executeQuery(query);
+        
+        System.out.println("...Bid has been placed");
+        resultSet.close();
+    }
+
+
+    static void sellThisProduct(int x, int amount, boolean toSell, Connection dbcon) throws SQLException{
+
+        Statement statement = dbcon.createStatement();
+
+        if(toSell){
+            String query = "Update Product set status = 'sold' WHERE auction_id = "+x+"";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            //add
+            query = "SELECT bidder from bidlog WHERE auction_id = "+x+"";
+            resultSet = statement.executeQuery(query);
+            resultSet.next();
+            
+            query = "Update Product set buyer = '"+resultSet.getString(1)+"' WHERE auction_id = "+x+"";
+            resultSet = statement.executeQuery(query);	
+
+            //add
+            query = "SELECT amount from bidlog WHERE auction_id = "+x+" AND amount = "+amount+"";
+            resultSet = statement.executeQuery(query);
+            resultSet.next();
+            
+            query = "Update Product set amount = "+resultSet.getString(1)+" WHERE auction_id = "+x+"";
+            resultSet = statement.executeQuery(query);	
+
+            //add
+            query = "Update Product set sell_date = getcurdate WHERE auction_id = "+x+"";
+            resultSet = statement.executeQuery(query);
+            
+            System.out.print("...Product has been sold!");
+            resultSet.close();
+        }else{
+            
+            String query = "Update Product set status = 'closed' WHERE auction_id = "+x+"";
+            ResultSet resultSet = statement.executeQuery(query);
+            System.out.print("...Product has been closed!");
+            resultSet.close();
+        }
+    }
+
+    static void getSuggestions(String username, Connection dbcon) throws SQLException{
+        Statement statement = dbcon.createStatement();
+        String query = "select auction_id, count(bidder) as bidders from bidlog natural join (select bidder from bidlog natural join (select auction_id from bidlog where bidder = 'juice26') where bidder != '" +username + "') where (auction_id not in (select auction_id from bidlog where bidder = '" +username + "'))Group by auction_id Order by bidders desc";
+        ResultSet resultSet = statement.executeQuery(query);
+        
+        while (resultSet.next()) {
+            System.out.println(resultSet.getString(1));
+        }
+        resultSet.close();
+    }
 }
 
 /*

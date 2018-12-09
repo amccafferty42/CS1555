@@ -8,7 +8,7 @@ public class Benchmark extends MyAuction{
     private static Connection dbcon;
     
     public static void main(String[] args) {
-        String username = "", password = "";
+        String username = "tms112", password = "3943171";
 		
         try {
             //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile
@@ -47,8 +47,6 @@ public class Benchmark extends MyAuction{
 
         insertManyBids();
 
-        sellManyProducts();
-
         getAllSuggestions();
     }
 
@@ -59,6 +57,7 @@ public class Benchmark extends MyAuction{
                         "Cleaning", "Decorations"};
 
         for(int i = 0; i < ar.length; i++){
+            System.out.println("\n"+ar[i]);
             super.printProducts(ar[i], 1, dbcon);
             super.printProducts(ar[i], 2, dbcon);
             super.printProducts(ar[i], 3, dbcon);
@@ -83,8 +82,11 @@ public class Benchmark extends MyAuction{
 
     public void listAllUserProducts() throws SQLException{
         String [] ar = {"tammy4life", "juice26", "prucker_"};
+        System.out.println("\nAll");
+        super.listProducts(" WHERE ", dbcon);
         for(int i = 0; i < ar.length; i++){
-            super.listProducts("WHERE seller = '" + ar[i] + "' AND ", dbcon);
+            System.out.println("\n"+ar[i]);
+            super.listProducts(" WHERE seller = '" + ar[i] + "' AND ", dbcon);
         }
     }
 
@@ -107,17 +109,10 @@ public class Benchmark extends MyAuction{
     }
 
     public void insertManyBids() throws SQLException{
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 40; i++){
             super.insertBid(1, "juice26", 200+i ,dbcon);
             selectAllFrom("Bidlog");
         }
-    }
-
-    public void sellManyProducts() throws SQLException{
-        super.sellThisProduct(1, 100, true ,dbcon);
-        selectAllFrom("Product");
-        super.sellThisProduct(2, 100, false ,dbcon);
-        selectAllFrom("Product");
     }
 
     public void getAllSuggestions() throws SQLException{
