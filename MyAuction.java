@@ -13,7 +13,8 @@ public class MyAuction {
     private String query;  
 
     public static void main(String [] args) {
-        String username = "tms112", password = "3943171";
+        String username = "tms112", password = "3943171";	
+		
 		
         try {
             //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile
@@ -123,8 +124,21 @@ public class MyAuction {
         System.out.println("\nRegister New Customer");
         System.out.print("\nName: ");
         String name = reader.next();
-        System.out.print("\nAddress: ");
-        String address = reader.nextLine();
+		
+		String address = reader.nextLine();
+        System.out.print("Address: ");
+        address = reader.nextLine();
+		
+		if( address.toLowerCase().contains("delete") || 
+			address.toLowerCase().contains("update") ||
+			address.toLowerCase().contains("alter") ||
+			address.toLowerCase().contains("create") ||
+			address.toLowerCase().contains("drop") ||
+			address.toLowerCase().contains("insert")){
+				  throw new SQLException("INJECTION DETECTED - Report has been logged!");
+
+			}
+		
         System.out.print("\nEmail: ");
         String email = reader.next();
         System.out.print("\nUsername: ");
@@ -304,6 +318,16 @@ public class MyAuction {
 			
 			category = reader.nextLine();
 			
+			if( category.toLowerCase().contains("delete") || 
+				category.toLowerCase().contains("update") ||
+				category.toLowerCase().contains("alter") ||
+				category.toLowerCase().contains("create") ||
+				category.toLowerCase().contains("drop") ||
+				category.toLowerCase().contains("insert")){
+					  throw new SQLException("INJECTION DETECTED - Report has been logged!");
+
+			}
+			
 			while (resultSet1.next()) {
 				if(category.equalsIgnoreCase(  resultSet1.getString(1))){
 					exist = true;
@@ -331,6 +355,17 @@ public class MyAuction {
 				System.out.print("\nWhat Category: ");
 				
 				category = reader.nextLine();
+				
+							
+				if( category.toLowerCase().contains("delete") || 
+					category.toLowerCase().contains("update") ||
+					category.toLowerCase().contains("alter") ||
+					category.toLowerCase().contains("create") ||
+					category.toLowerCase().contains("drop") ||
+					category.toLowerCase().contains("insert")){
+						  throw new SQLException("INJECTION DETECTED - Report has been logged!");
+
+				}
 				
 				while (resultSet1.next()) {
 					if(category.equalsIgnoreCase(  resultSet1.getString(1))){
@@ -363,6 +398,18 @@ public class MyAuction {
        System.out.println("\n-Search Products-");
        System.out.print("\nKeywords:");
        String words = reader.nextLine();
+	   
+	   			
+		if( words.toLowerCase().contains("delete") || 
+			words.toLowerCase().contains("update") ||
+			words.toLowerCase().contains("alter") ||
+			words.toLowerCase().contains("create") ||
+			words.toLowerCase().contains("drop") ||
+			words.toLowerCase().contains("insert")){
+				  throw new SQLException("INJECTION DETECTED - Report has been logged!");
+
+		}
+	   
        String[] keywords = words.split(" ");
       
 
@@ -377,10 +424,46 @@ public class MyAuction {
         System.out.println("Put a product up for auction");
         System.out.print("Name: ");
         String name = reader.nextLine();
+		
+		if( name.toLowerCase().contains("delete") || 
+			name.toLowerCase().contains("update") ||
+			name.toLowerCase().contains("alter") ||
+			name.toLowerCase().contains("create") ||
+			name.toLowerCase().contains("drop") ||
+			name.toLowerCase().contains("insert")){
+				  throw new SQLException("INJECTION DETECTED - Report has been logged!");
+
+		}
+		
+		
         System.out.print("Description: ");
         String desc = reader.nextLine();
+		
+		
+		if( desc.toLowerCase().contains("delete") || 
+			desc.toLowerCase().contains("update") ||
+			desc.toLowerCase().contains("alter") ||
+			desc.toLowerCase().contains("create") ||
+			desc.toLowerCase().contains("drop") ||
+			desc.toLowerCase().contains("insert")){
+				  throw new SQLException("INJECTION DETECTED - Report has been logged!");
+
+		}
+		
         System.out.print("Categories: ");
         String categories = reader.nextLine();
+		
+		
+		if( categories.toLowerCase().contains("delete") || 
+			categories.toLowerCase().contains("update") ||
+			categories.toLowerCase().contains("alter") ||
+			categories.toLowerCase().contains("create") ||
+			categories.toLowerCase().contains("drop") ||
+			categories.toLowerCase().contains("insert")){
+				  throw new SQLException("INJECTION DETECTED - Report has been logged!");
+
+			}
+		
         int days = 0;
         do{
             System.out.print("Days for Auction: ");
@@ -550,11 +633,11 @@ public class MyAuction {
 
 	//Created
     static void suggestions(String username) throws SQLException{
-        System.out.println("Suggestions:");
+        System.out.println("--SUGGESTED AUCTION_ID(s)--");
 		
 		getSuggestions(username, dbcon);
 		
-		System.out.println("--SUGGESTED AUCTION_ID(s)--");
+		
     }
 	
 //FUNCTIONS FOR DRIVER AND BENCHMARK	
