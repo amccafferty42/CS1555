@@ -8,7 +8,7 @@ public class Driver extends MyAuction{
     private static Connection dbcon;
     
     public static void main(String[] args) {
-        String username = "tms112", password = "3943171";
+        String username = "", password = "";
 		
         try {
             //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile
@@ -21,7 +21,7 @@ public class Driver extends MyAuction{
         }
         catch (SQLException s) {
             System.out.print(s.toString());                
-            System.exit(1);
+			System.out.println();
         }
     }
 
@@ -52,7 +52,8 @@ public class Driver extends MyAuction{
         System.out.println("\nListing User Products (tammy4life)");
         super.listProducts(" WHERE seller = 'tammy4life' AND ", dbcon);
 
-        //still needs stats
+		System.out.println("\nListing Products Statistics(10, 5)");
+        super.statistics(10 , 5 , dbcon);
 
         System.out.println("\nPrinting products with keywords a and b");
         String [] ar = {"a", "b"};
@@ -63,7 +64,7 @@ public class Driver extends MyAuction{
         selectAllFrom("Product");
 
         System.out.println("\nInserting bid");
-        super.insertBid(1, "juice26", 100 ,dbcon);
+        super.insertBid(2, "juice26", 100 ,dbcon);
         selectAllFrom("Bidlog");
 
         System.out.println("\nSelling Product");

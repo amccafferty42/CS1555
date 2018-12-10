@@ -13,7 +13,7 @@ public class MyAuction {
     private String query;  
 
     public static void main(String [] args) {
-        String username = "tms112", password = "3943171";	
+        String username = "", password = "";	
 		
 		
         try {
@@ -111,7 +111,7 @@ public class MyAuction {
                 productStats();
             }
 			else if(input == 4){
-                statistics();
+                statistics(0,0, dbcon);
             }
 			
         }while(input != 5);
@@ -605,30 +605,165 @@ public class MyAuction {
 		}
     }
 	
-    //NEEDS TO BE CREATED/ADDED	
-    static void statistics() throws SQLException{
-        Scanner reader = new Scanner(System.in);
-        int x = 0;
-        do{
-            System.out.println("Number of months to look back: ");
-            if(reader.hasNextInt()){
-                x = reader.nextInt();
-            }
-        }while(x <= 0);
+    //DONE
+	static void statistics(int x, int k, Connection dbcon) throws SQLException{
+       Scanner reader = new Scanner(System.in);
+       //int x = 0, k = 0;
+
+       Statement statement = dbcon.createStatement();
+       String query;
+       ResultSet resultSetCat;
+		if(x == 0 && k == 0){
+		   do {
+			   System.out.println("Number of months to look back: ");
+			   if(reader.hasNextInt()){
+				   x = reader.nextInt();
+			   }
+		   } while(x <= 0);
+		   do {
+				System.out.println("Number of results to list: ");
+				if(reader.hasNextInt()){
+					k = reader.nextInt();
+				}
+			} while(k <= 0);
+			
+		
+		}
        
-	   /*i*/
+       /*i*/
+            //stores category name and product count of respective category
+            Map<Integer, String> i = new HashMap<Integer, String>(20);
+
+            //select all categories
+            query = "SELECT name FROM Category WHERE parent_category IS NOT NULL";
+			resultSetCat = statement.executeQuery(query);
+            
+            //iterate through set of categories and store product count in HashMap
+            while(resultSetCat.next()) {
+				ResultSet resultSet;
+                statement = dbcon.createStatement();
+                query = "SELECT func_productCount("+x+",'"+resultSetCat.getString(1)+"') from dual";
+                //System.out.println(query);
+                resultSet = statement.executeQuery(query);
+                resultSet.next();
+                i.put(resultSet.getInt(1) * -1, resultSetCat.getString(1));
+                //System.out.println("Added K: "+resultSet.getInt(1)+" and V: "+resultSetCat.getString(1));
+				resultSet.close();
+			
+			}
+
+            //convert to stream and use comparator from Map.Entry to sort in descending order then convert back to Map with a limit of k entries
+            Map<Integer, String> treeMap = new TreeMap<Integer,String>(i);
+
+            //print out map
+            System.out.println("\n-----Statistics-----\nThe top "+k+" highest categories: ");
+            printMap(treeMap, k);
+			System.out.println("");
+			resultSetCat.close();
+			
+			
 	   
-	   
-	   
-	   /*ii*/
+       /*ii*/
+            //stores category name and product count of respective category
+            Map<Integer, String> ii = new HashMap<Integer, String>(20);
+
+            //select all categories
+            query = "SELECT name FROM Category WHERE parent_category IS NULL";
+			resultSetCat = statement.executeQuery(query);
+            
+            //iterate through set of categories and store product count in HashMap
+            while(resultSetCat.next()) {
+				ResultSet resultSet;
+                statement = dbcon.createStatement();
+                query = "SELECT func_productCount("+x+",'"+resultSetCat.getString(1)+"') from dual";
+                //System.out.println(query);
+                resultSet = statement.executeQuery(query);
+                resultSet.next();
+                ii.put(resultSet.getInt(1), resultSetCat.getString(1));
+                //System.out.println("Added K: "+resultSet.getInt(1)+" and V: "+resultSetCat.getString(1));
+				resultSet.close();
+			
+			}
+
+            //convert to stream and use comparator from Map.Entry to sort in descending order then convert back to Map with a limit of k entries
+            treeMap = new TreeMap<Integer,String>(ii);
+
+            //print out map
+            System.out.println("The top "+k+" highest parent categories: ");
+            printMap(treeMap, k);       
+			System.out.println("");
+			resultSetCat.close();
+			
+			
+    
 	   
 	   
 	   /*iii*/
+
+            Map<Integer, String> iii = new HashMap<Integer, String>(20);
+
+            //select all users
+            query = "SELECT login FROM Customer";
+			resultSetCat = statement.executeQuery(query);
+            
+            //iterate through set of users and store bidCount in Map
+            while(resultSetCat.next()) {
+				ResultSet resultSet;
+                statement = dbcon.createStatement();
+                query = "SELECT func_bidCount("+x+",'"+resultSetCat.getString(1)+"') from dual";
+                //System.out.println(query);
+                resultSet = statement.executeQuery(query);
+                resultSet.next();
+                iii.put(resultSet.getInt(1), resultSetCat.getString(1));
+                //System.out.println("Added K: "+resultSet.getInt(1)+" and V: "+resultSetCat.getString(1));
+				resultSet.close();
+			
+			}
+
+            //convert to treeMap to sort by ascending order
+            treeMap = new TreeMap<Integer,String>(iii);
+
+            //print out map
+            System.out.println("The top "+k+" most active bidders ");
+            printMap(treeMap, k);
+			System.out.println("");
+			resultSetCat.close();
+		
+			
 	   
+       /*iv*/
+       
+       Map<Integer, String> iv = new HashMap<Integer, String>(20);
+
+
+       //select all users
+       query = "SELECT login FROM Customer";
+       resultSetCat = statement.executeQuery(query);
+       
+       //iterate through set of users and store buying amount in map
+       while(resultSetCat.next()) {
+		   ResultSet resultSet;
+           statement = dbcon.createStatement();
+           query = "SELECT func_buyingAmount("+x+",'"+resultSetCat.getString(1)+"') from dual";
+           //System.out.println(query);
+           resultSet = statement.executeQuery(query);
+           resultSet.next();
+           iv.put(resultSet.getInt(1), resultSetCat.getString(1));
+           //System.out.println("Added K: "+resultSet.getInt(1)+" and V: "+resultSetCat.getString(1));
+		   resultSet.close();
 	   
-	   
-	   /*iv*/
-	   
+	   }
+
+       //convert to treeMap to sort by ascending order
+       treeMap = new TreeMap<Integer,String>(iv);
+
+       //print out map
+       System.out.println("The top "+k+" most active buyers ");
+       printMap(treeMap, k);
+       
+       //close statements
+       resultSetCat.close();
+
    }
 
 	//Created
@@ -808,6 +943,20 @@ public class MyAuction {
         }
         resultSet.close();
     }
+	
+	static <K,V> void printMap(Map<K,V> treeMap, int num) {
+    int c = 0;
+    for (Map.Entry<K,V> entry : treeMap.entrySet()) {
+        c++;
+        if (c <= num) {
+            System.out.println(c+": "+entry.getValue());
+        }
+        else {
+            break;
+        }
+    }
+}
+	
 }
 
 /*
