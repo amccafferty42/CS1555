@@ -8,7 +8,7 @@ public class Benchmark extends MyAuction{
     private static Connection dbcon;
     
     public static void main(String[] args) {
-        String username = "tms112", password = "3943171";
+        String username = "", password = "";
 		
         try {
             //Oracle variable MUST BE SET by sourcing bash.env or tcsh.env or the following line will not compile
@@ -39,7 +39,7 @@ public class Benchmark extends MyAuction{
 
         listAllUserProducts();
 
-        //listAllStats();
+		listAllStats();
 
         searchManyKeywords();
 
@@ -48,6 +48,8 @@ public class Benchmark extends MyAuction{
         insertManyBids();
 
         getAllSuggestions();
+		
+
     }
 
     public void printAllProducts() throws SQLException{
@@ -136,4 +138,15 @@ public class Benchmark extends MyAuction{
             System.out.println();
         }
     }
+	
+	public void listAllStats() throws SQLException{
+		
+		for(int k = 1; k<=10; k++){
+			for(int i = 1; i <= 6; i++){
+					super.statistics(i , k , dbcon);
+				}
+		}
+		System.out.println();
+		
+	}
 }
